@@ -68,7 +68,7 @@
     "androidscreenresizeable": "false",
     "androidscreensmall": "true",
     "androidwear_allowselfsignedcertificates": "None",
-    "andwearapppackagekey": "com.orgname.q92tPro1",
+    "andwearapppackagekey": "com.orgname.test",
     "andwearappversioncode": "1",
     "andwearmaxsdkkey": "None",
     "antialiaseddrawing": "false",
@@ -84,7 +84,7 @@
     "apmserviceresponse": "false",
     "apmtouchorclick": "",
     "appaddrkey": "",
-    "appidkey": "q92tPro1",
+    "appidkey": "test",
     "appiniteventkey": "None",
     "applepushfunc": "None",
     "apploadeventkey": "None",
@@ -97,7 +97,7 @@
                         "default": "option1.png"
                     },
                     "id": "appmenuitemid1",
-                    "kuid": "c02f0f9dd01e422095a17a4a7c3f7fa0",
+                    "kuid": "c3cfce37d2ee4b9e95e550403fc91ecb",
                     "title": "Item 1"
                 },
                 {
@@ -105,7 +105,7 @@
                         "default": "option2.png"
                     },
                     "id": "appmenuitemid2",
-                    "kuid": "fc22178770604d7d84a6bd505cc35280",
+                    "kuid": "j5eee58427fd49538288e8b5e08d5bf5",
                     "title": "Item 2"
                 },
                 {
@@ -113,7 +113,7 @@
                         "default": "option3.png"
                     },
                     "id": "appmenuitemid3",
-                    "kuid": "d4617263cbbd4cc3a9eb2a7eccf46958",
+                    "kuid": "gc6d0a6b404843d1b086ab9a774396d9",
                     "title": "Item 3"
                 },
                 {
@@ -121,7 +121,7 @@
                         "default": "option4.png"
                     },
                     "id": "appmenuitemid4",
-                    "kuid": "b3447f76e8404f1e82d49f628202356f",
+                    "kuid": "be571ac8061d44fab8e8688586c839d3",
                     "title": "Item 4"
                 }
             ]
@@ -135,7 +135,7 @@
                         "default": "option1.png"
                     },
                     "id": "appmenuitemid1",
-                    "kuid": "b9309fbc6f6e4cfe9c780ed51904a43b",
+                    "kuid": "a5fc4de9685f42a6a0a181b49645bdec",
                     "title": "Item 1"
                 },
                 {
@@ -143,7 +143,7 @@
                         "default": "option2.png"
                     },
                     "id": "appmenuitemid2",
-                    "kuid": "j20242d6d68b4894ad5f27c55c57c2de",
+                    "kuid": "d2ed3fb3f0fd4e10aa06292381048e5f",
                     "title": "Item 2"
                 },
                 {
@@ -151,7 +151,7 @@
                         "default": "option3.png"
                     },
                     "id": "appmenuitemid3",
-                    "kuid": "jae5f72a37814504b616986d871759c5",
+                    "kuid": "c9c4da5ba9d94058b71c9988acff6151",
                     "title": "Item 3"
                 },
                 {
@@ -159,7 +159,7 @@
                         "default": "option4.png"
                     },
                     "id": "appmenuitemid4",
-                    "kuid": "f0c085e64a68459b9ca50f252726af49",
+                    "kuid": "i5183e0d91234c3785e34f366f8e8623",
                     "title": "Item 4"
                 }
             ]
@@ -174,7 +174,7 @@
                         "default": "option1.png"
                     },
                     "id": "appmenuitemid1",
-                    "kuid": "cb8f8c57d9c546c6877f0778e4686fce",
+                    "kuid": "b0d160680f0b419cb3c7da68a540f43e",
                     "title": "Item 1",
                     "windows8": {
                         "appBarButtonStyle": "No Style",
@@ -186,7 +186,7 @@
                         "default": "option2.png"
                     },
                     "id": "appmenuitemid2",
-                    "kuid": "acc1648dc1ff43d4a6fd20e1fb090871",
+                    "kuid": "if5cdf996a2f48eaae4a34822ba9d423",
                     "title": "Item 2",
                     "windows8": {
                         "appBarButtonStyle": "No Style",
@@ -198,7 +198,7 @@
                         "default": "option3.png"
                     },
                     "id": "appmenuitemid3",
-                    "kuid": "c1eb4cbf37564eb0842ae3402ec96002",
+                    "kuid": "fdc73d1c20fb4ee1aac79e47392cd2e3",
                     "title": "Item 3",
                     "windows8": {
                         "appBarButtonStyle": "No Style",
@@ -210,7 +210,7 @@
                         "default": "option4.png"
                     },
                     "id": "appmenuitemid4",
-                    "kuid": "f2dcbea0a95f485ba85f386b406f60f4",
+                    "kuid": "ee25a52161fb4541bca92518ab7b4100",
                     "title": "Item 4",
                     "windows8": {
                         "appBarButtonStyle": "No Style",
@@ -221,9 +221,9 @@
         },
         "wType": "Appmenu"
     },
-    "appnamekey": "q92tPro1",
+    "appnamekey": "test",
     "appointments": "false",
-    "apppackagekey": "com.orgname.q92tPro1",
+    "apppackagekey": "com.orgname.test",
     "apptitle": "",
     "appversioncode": "1",
     "appversionkey": "1.0.0",
@@ -256,12 +256,14 @@
     "camerasettings": "",
     "category": "app",
     "chat": "false",
+    "cloud_account_guid": "39049b50-6c3f-43e5-8591-9628ac446405",
+    "cloud_env_GUID": "50c34fb5-0190-423d-9feb-d01f1c73d099",
     "codeGeneration": "false",
     "contacts": "false",
     "cordovaModified": false,
-    "createdVizVersion": "9.2.43",
-    "createdgaversion": "9.2.43",
-    "currentgaversion": "9.2.300",
+    "createdVizVersion": "9.2.54",
+    "createdgaversion": "9.2.54",
+    "currentgaversion": "9.2.54",
     "deeplinkkey": "None",
     "defaultZIndex": "1",
     "defaultlocalekey": "",
@@ -348,7 +350,7 @@
     "iphone_spotlighticon_2x_40": "",
     "iphone_spotlighticon_3x_29": "",
     "iphone_spotlighticon_3x_40": "",
-    "iphonebundleidentifierkey": "com.kony.q92tPro1",
+    "iphonebundleidentifierkey": "com.hcl.test",
     "iphonebundleversionkey": "1.0.0",
     "iphoneipad_appstoreicon_1x_1024": "",
     "iphoneipadglossyeffectkey": "false",
@@ -365,8 +367,8 @@
     "keyAliasandwear": "",
     "keyStoreFilePath": "",
     "keyStoreFilePathandwear": "",
-    "konyVizVersion": "9.2.300",
-    "lastmodifiedtime": "1649756392947",
+    "konyVizVersion": "9.2.54",
+    "lastmodifiedtime": "1666379265021",
     "location": "false",
     "mangoapptitlekey": ",,,,,,",
     "mapkey": "",
@@ -642,9 +644,11 @@
     "read_device_identifying_information": "false",
     "referenceWidth": "375",
     "registerForDeepLink": {
+        "androidwear": false,
         "desktop": false,
         "mobile": false,
-        "tablet": false
+        "tablet": false,
+        "watch": false
     },
     "remoteSystem": "false",
     "removableStorage": "false",
@@ -666,7 +670,7 @@
     "spawindows480basefontsize": "12",
     "spawindowstabbasefontsize": "17",
     "splashlogokey": "",
-    "startupformkey": "g0e10e409a72429e84b659e3c2605031",
+    "startupformkey": "d779d0747bb24c3c9a5d137046da1bf7",
     "statusBarHidden": "false",
     "statusBarStyle": "STATUS_BAR_STYLE_DEFAULT",
     "support32bit": "false",
@@ -721,7 +725,7 @@
     "userNotificationListener": "false",
     "useridkey": "",
     "usevizactions": "false",
-    "vendornamekey": "KonyLabs",
+    "vendornamekey": "HCL",
     "videosLibrary": "false",
     "voipCall": "false",
     "wap_android240_fontsize": "10",
@@ -771,16 +775,16 @@
     "win8bgagenttaskname": "",
     "win8certificatekey": "",
     "win8descriptionkey": "Sample Test Application",
-    "win8displaynamekey": "q92tPro1",
+    "win8displaynamekey": "test",
     "win8enablecrashlogkey": "false",
     "win8lockscreennotificationskey": "Not set",
-    "win8packagedisplaynamekey": "q92tPro1",
+    "win8packagedisplaynamekey": "test",
     "win8packagelogokey": "",
-    "win8packagenamekey": "q92tPro1",
-    "win8packagepublichernamekey": "Temenos",
-    "win8publisherdisplaynamekey": "Temenos",
+    "win8packagenamekey": "test",
+    "win8packagepublichernamekey": "HCL",
+    "win8publisherdisplaynamekey": "HCL",
     "win8pvkkey": "",
-    "win8shortnamekey": "q92tPro1",
+    "win8shortnamekey": "test",
     "win8shownamekey": "Not set",
     "win8smalllogokey": "",
     "win8toastcapablekey": "Not set",
@@ -798,7 +802,7 @@
     "windowsloadindicatorkey": "true",
     "windowsmapkey": "",
     "winenablecrashlogkey": "false",
-    "winmangotiletitlekey": "q92tPro1",
+    "winmangotiletitlekey": "test",
     "winmobileguidkey": "",
     "winmobiletileimagekey": "",
     "winphn10bgagentclassname": "",
@@ -826,7 +830,7 @@
     "wp10codeGeneration": "false",
     "wp10contacts": "false",
     "wp10descriptionkey": "Sample Test Application",
-    "wp10displayname": "q92tPro1",
+    "wp10displayname": "test",
     "wp10enablecrashlogkey": "false",
     "wp10enterpriseAuthentication": "false",
     "wp10initialRotationPreferenceKey": "landscape",
@@ -837,9 +841,9 @@
     "wp10microphone": "false",
     "wp10musicLibrary": "false",
     "wp10objects3D": "false",
-    "wp10packagedisplaynamekey": "q92tPro1",
+    "wp10packagedisplaynamekey": "test",
     "wp10packagelogokey": "",
-    "wp10packagenamekey": "q92tPro1",
+    "wp10packagenamekey": "test",
     "wp10packagepublichernamekey": "KonyLabs",
     "wp10pfxkey": "",
     "wp10phoneCall": "false",
@@ -850,7 +854,7 @@
     "wp10remoteSystem": "false",
     "wp10removableStorage": "false",
     "wp10sharedUserCertificates": "false",
-    "wp10shortnamekey": "q92tPro1",
+    "wp10shortnamekey": "test",
     "wp10shownamekey": "Not set",
     "wp10smalllogokey": "",
     "wp10tileUpdateRecurrenceKey": "",
@@ -868,10 +872,10 @@
     "wp10webcam": "false",
     "wp10widelogokey": "",
     "wp81sdescriptionkey": "Sample Test Application",
-    "wp81sdisplaynamekey": "q92tPro1",
+    "wp81sdisplaynamekey": "test",
     "wp81slockscreennotificationskey": "Not set",
-    "wp81spackagedisplaynamekey": "q92tPro1",
-    "wp81spackagenamekey": "q92tPro1",
+    "wp81spackagedisplaynamekey": "test",
+    "wp81spackagenamekey": "test",
     "wp81spackagepublichernamekey": "Kony",
     "wp81spublisherdisplaynamekey": "KonyLabs",
     "wp81stoastcapablekey": "Not set",
@@ -900,7 +904,5 @@
     "wp8textnotificationkey": "false",
     "wp8tilestemplatekey": "FLIP_TILE",
     "wp8tilestitlekey": "",
-    "xhtmlfavicokey": "",
-    "export.type": "visualizer",
-    "plugins_download_site_url": "https://quantum-download.hclvoltmx.com"
+    "xhtmlfavicokey": ""
 }

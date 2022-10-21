@@ -8,7 +8,7 @@
             "android": {},
             "iphone": {
                 "splashConfig": {
-                    "_skin_": "sb22f51989254f9997d8a88269fec4b3",
+                    "_skin_": "s81f25cb519842b88337f5388aadb163",
                     "children": []
                 }
             },
@@ -24,7 +24,7 @@
             "ipad": {
                 "landscape": {},
                 "splashConfig": {
-                    "_skin_": "sb22f51989254f9997d8a88269fec4b3",
+                    "_skin_": "s81f25cb519842b88337f5388aadb163",
                     "children": []
                 }
             },
