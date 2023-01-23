@@ -12,6 +12,7 @@ WindowsOfflineObjects.OfflineSDKObject.prototype.markForUpload= function(sdkObje
 WindowsOfflineObjects.OfflineSDKObject.prototype.delete= function(sdkObjectName,options,successCallback,failureCallback){};
 WindowsOfflineObjects.OfflineSDKObject.prototype.update= function(sdkObjectName,record,options,successCallback,failureCallback){};
 WindowsOfflineObjects.OfflineSDKObject.prototype.cancelSync= function(sdkObjectName,options,successCallback,failureCallback){};
+WindowsOfflineObjects.OfflineSDKObject.prototype.clearOfflineData= function(sdkObjectName,options,successCallback,failureCallback){};
 
 WindowsOfflineObjects.OfflineSDKObjectService=function(){}
 WindowsOfflineObjects.OfflineSDKObjectService.prototype.startSync= function(sdkObjectServiceName,options,successCallback,failureCallback,progressCallback){};
@@ -28,5 +29,8 @@ WindowsOfflineObjects.rollback= function(successCallback,failureCallback){};
 WindowsOfflineObjects.reset= function(objServiceList,options,successCallback,failureCallback){};
 WindowsOfflineObjects.setIntegrityCheck= function(properties){};
 WindowsOfflineObjects.removeIntegrityCheck= function(){};
+WindowsOfflineObjects.resetGlobalRequestParams=function() {};
+WindowsOfflineObjects.removeGlobalRequestParam=function(paramName,paramType) {};
+WindowsOfflineObjects.setGlobalRequestParam=function(paramName,paramValue,paramType) {};
 WindowsOfflineObjects.executeSelectQuery= function(query,successCallback,failureCallback){};
 WindowsOfflineObjects.startSync= function(options,successCallback,failureCallback,progressCallback){};

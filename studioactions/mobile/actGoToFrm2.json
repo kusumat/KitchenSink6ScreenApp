@@ -25,6 +25,7 @@
             "type": "NAVIGATE_TO_FORM",
             "formId": "frm2",
             "formKUID": "8915b8f74f6a4e5ab7bd3884c0b13e8a",
+            "projectName": "KitchenSink6ScreenApp",
             "mappings": {},
             "mappingsOrder": [],
             "parentId": "",
