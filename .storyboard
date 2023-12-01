@@ -395,7 +395,7 @@
                     "isStartupForm": false,
                     "key": "58566a496a51449cb79142d2e826ed0a",
                     "loc": "3236.399999999999 624.845263671875",
-                    "thumbnailURL": null
+                    "thumbnailURL": "/assets/KitchenSink6ScreenApp/forms/mobile/frmHome.sm/.thumbs/default.jpeg"
                 },
                 {
                     "formKUID": "f27dad4cfa8f4cb3a7b553f5bbadc5e6",
@@ -411,7 +411,7 @@
                     "isStartupForm": false,
                     "key": "d6c29d3c1ed7483ea6883f7d3bf516c0",
                     "loc": "2313.999999999999 124.845263671875",
-                    "thumbnailURL": null
+                    "thumbnailURL": "/assets/KitchenSink6ScreenApp/forms/mobile/frmLogout.sm/.thumbs/default.jpeg"
                 }
             ]
         }
