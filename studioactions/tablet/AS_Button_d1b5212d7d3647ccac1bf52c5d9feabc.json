@@ -1,0 +1,24 @@
+{
+    "AS_Button_d1b5212d7d3647ccac1bf52c5d9feabc": {
+        "id": "AS_Button_d1b5212d7d3647ccac1bf52c5d9feabc",
+        "type": "ACTION_SEQUENCE",
+        "params": [{
+            "datatype": "collection",
+            "name": "eventobject"
+        }],
+        "contextObj": {
+            "name": "Form1",
+            "type": "forms",
+            "platform": null,
+            "KUID": "a3a9e8e5dd624a02bb12dd3163e2cdba"
+        },
+        "language": "js",
+        "eventType": "onClick",
+        "actions": [{
+            "id": "ADD_SNIPPET_c59ca375e6324eac8d1ac617f9602247",
+            "type": "ADD_SNIPPET",
+            "codeSnippet": "alert(\"Working Tablet\");",
+            "parentId": null
+        }]
+    }
+}
