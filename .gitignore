@@ -10,8 +10,8 @@ binaries/
 
 # Other Visualizer auto-generated files.
 middleware.properties
-modules/kony_sdk.js
-modules/KonySyncLib.js
+modules/voltmx_sdk.js
+modules/VoltmxSyncLib.js
 
 # Auto-generated temporary internationalization files.
 resources/i18n/
@@ -22,11 +22,14 @@ velocity.log
 # intellisense file for external editors
 .tern-project
 
+# Auto-generated test resource js files
+testresources/Jasmine/\*.js
+
 # Below list of files are optionally commented to support Headless/CI build
 
 # Starting with Visualizer 7.3 the /sdkplugin.properties file has been moved to
 # `/resources/customlibs/sdkplugin.properties` and can be automatically re-created by Visualizer
-# during the build, provided that folder resources/customlibs exists. Consider adding a .gitkeep 
+# during the build, provided that folder resources/customlibs exists. Consider adding a .gitkeep
 # file in order to force it into source control.
 
 # resources/customlibs/sdkplugin.properties
@@ -97,3 +100,9 @@ velocity.log
 # web/cordova/plugins
 # web/cordova/platforms
 
+# Every controller file is accompanied by an auto-generated controller actions file.
+/controllers/**/*ControllerActions.js
+/userwidgets/**/modules/require/*ControllerActions.js
+
+# IQ Cop reports
+reports/
