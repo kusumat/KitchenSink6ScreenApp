@@ -1,9 +1,9 @@
 {
-    "HEAD": "hd87593bec334dc393a8ca5226c1a4e4",
-    "hd87593bec334dc393a8ca5226c1a4e4": {
+    "HEAD": "e862b4216bf54799b8e1de3a14c37b50",
+    "e862b4216bf54799b8e1de3a14c37b50": {
         "children": [],
-        "kuid": "hd87593bec334dc393a8ca5226c1a4e4",
-        "name": "Other Resources",
+        "kuid": "e862b4216bf54799b8e1de3a14c37b50",
+        "name": "otherresources",
         "type": "D"
     }
 }

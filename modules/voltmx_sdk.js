@@ -1,5 +1,5 @@
  /*
-  * voltmx-sdk-ide Version 9.5.5
+  * voltmx-sdk-ide Version 9.2.3
   */
         
 //#ifdef iphone
@@ -297,6 +297,22 @@
 //#define PLATFORM_NATIVE_WINDOWS_AND_SPA
 //#endif
 
+//#ifdef iphone
+//#define PLATFORM_NATIVE_IOS_WINDOWS
+//#endif
+//#ifdef ipad
+//#define PLATFORM_NATIVE_IOS_WINDOWS
+//#endif
+//#ifdef winphone8
+//#define PLATFORM_NATIVE_IOS_WINDOWS
+//#endif
+//#ifdef windows8
+//#define PLATFORM_NATIVE_IOS_WINDOWS
+//#endif
+//#ifdef desktop_kiosk
+//#define PLATFORM_NATIVE_IOS_WINDOWS
+//#endif
+
 //#ifdef universalwindows_offlineobjects
 //#define PLATFORM_NATIVE_WINDOWS
 //#endif
@@ -304,9 +320,6 @@
 //#define OFFLINE_OBJECTS_SUPPORT
 //#endif
 
-//#ifdef plainjs
-//#define PLATFORM_PLAIN_JS
-//#endif
 /**
  * Volt MX namespace
  * @namespace voltmx
@@ -540,7 +553,7 @@ voltmx.sdk.currentInstance = null;
 voltmx.sdk.isLicenseUrlAvailable = true;
 voltmx.sdk.isOAuthLogoutInProgress = false;
 voltmx.sdk.constants = voltmx.sdk.constants || {};
-voltmx.sdk.version = "9.5.5";
+voltmx.sdk.version = "9.2.3";
 voltmx.sdk.logsdk = new voltmxSdkLogger();
 voltmx.sdk.syncService = null;
 voltmx.sdk.dataStore = voltmx.sdk.dataStore || new voltmxDataStore();
@@ -693,19 +706,6 @@ voltmx.sdk.fetchClaimsTokenFromServer = function(isBackendTokenRefreshRequired, 
                                   ' in claims refresh');
         _url = _url + "?refresh=true";
         bodyParams[voltmx.sdk.constants.ENABLE_REFRESH_LOGIN] = true;
-
-        //retrieve custom params
-        if(!voltmx.sdk.util.isNullOrUndefinedOrEmptyObject(voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh)) {
-            var customOAuthParams = {};
-            for (var provider in voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh) {
-                for (var paramKey in voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh[provider]) {
-                    customOAuthParams[paramKey] = voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh[provider][paramKey];
-                }
-            }
-
-            //populating custom oAuth params
-            voltmx.sdk.util.populateCustomOAuthParams(bodyParams, customOAuthParams);
-        }
     }
     voltmx.sdk.logsdk.debug("service url is " + _url);
     if (voltmxRef.currentRefreshToken === null) {
@@ -932,10 +932,6 @@ voltmx.sdk.prototype.initWithServiceDoc = function(appKey, appSecret, serviceDoc
     var mSessionUrl = "";
     // initializing identity SID as empty string
     voltmxRef.idSid = "";
-
-    // initializing refresh login record keeping Set.
-    voltmxRef.refreshLoginProvidersSet = new Set();
-
     KNYMobileFabric = VMXFoundry = this;
     voltmx.sdk.currentInstance = this;
 
@@ -1113,11 +1109,6 @@ voltmx.sdk.prototype.initWithServiceDoc = function(appKey, appSecret, serviceDoc
                 }
             }
 
-            // Generating SDK Client UUID for service calls and server events
-            if (voltmx.sdk.getSdkType() !== voltmx.sdk.constants.SDK_TYPE_PHONEGAP) {
-                voltmx.sdk.util.checkAndGenerateClientUUID();
-            }
-
             voltmx.sdk.logsdk.perf("Executing Finished voltmx.sdk.prototype.initWithServiceDoc");
             return true;
          }
@@ -1135,7 +1126,7 @@ voltmx.sdk.prototype.sessionChangeHandler = function(changes) {
     voltmxRef.getMetricsService();
     var sessionId = null;
     var userId = null;
-    if (!voltmx.sdk.util.isNullOrEmptyString(changes["sessionId"])) {
+    if (changes["sessionId"] != undefined) {
         sessionId = changes["sessionId"];
         voltmxRef.setSessionId(sessionId);
         if(voltmxRef.internalSdkObject) {
@@ -1609,9 +1600,7 @@ voltmx.sdk.constants =
         GET_CLIENT_PROPERTY_URL : "/metadata/configurations/client/properties",
         DEFAULT_CACHE_EXPIRY_TIME : 0, //Which means it doesn't expire in the application session.
         QUERY_PARAMS : "queryParams",
-        QUERY : "query",
         BODY_PARAMS : "bodyParams",
-        OAUTH_SESSION_RESPONSE_TYPE : "oauth_session_response_type",
 
         /**Service ID's for Identity Calls**/
         GET_BACKEND_TOKEN : "getBackendToken",
@@ -1624,19 +1613,16 @@ voltmx.sdk.constants =
         OAUTH_TOKEN_URL : "/oauth2/token",
         KEY_HTTP_REQUEST_OPTIONS : "httpRequestOptions",
         KEY_XML_HTTP_REQUEST_OPTIONS :"xmlHttpRequestOptions",
-        ENABLE_WITH_CREDENTIALS : "enableWithCredentials",
         KEY_GRANT_TYPE : "grant_type",
         KEY_REFRESH_TOKEN : "refresh_token",
         KEY_BACKEND_REFRESH_TOKEN : "backend_refresh_token",
         KEY_AUTH_REFRESH_TOKEN : "auth_refresh_token",
         KEY_URL:"url",
-        KEY_APP_CHALLENGE_METHOD: "app_challenge_method",
-        APP_VERIFIER: "app_verifier",
-        APP_CHALLENGE: "app_challenge",
-        APP_CHALLENGE_METHOD_VALUE: "S256",
+        CODE_CHALLENGE: "code_challenge",
+        KEY_CODE_CHALLENGE_METHOD: "code_challenge_method",
+        CODE_VERIFIER: "code_verifier",
+        CODE_CHALLENGE_METHOD_VALUE: "S256",
         PKCE_CODE_MAX_LENGTH: 128,
-        IS_ENABLE_IDENTITY_PKCE : "is_enable_identity_pkce",
-        ENABLE_IDENTITY_PKCE : "enable_identity_pkce",
 
         /** Identity Options**/
         OAUTH_REDIRECT_SUCCESS_URL: "success_url",
@@ -1665,7 +1651,6 @@ voltmx.sdk.constants =
         HTTP_METHOD_DELETE : "DELETE",
         HTTP_CONTENT_HEADER : "Content-Type",
         HTTP_REQUEST_HEADER_ACCEPT : "Accept",
-        HEADER : "header",
 
         /**Content Type Value Constants**/
         CONTENT_TYPE_FORM_URL_ENCODED   : "application/x-www-form-urlencoded",
@@ -1750,6 +1735,8 @@ voltmx.sdk.constants =
         AUTH_TOKEN: "authToken",
         DEVICE_AUTHTOKEN_HEADER: "X-Device-AuthToken",
         FUNCTION_STRING : "function",
+        SUCCESS_STRING : "SUCCESS",
+        ERROR_STRING : "ERROR",
 
         /**Parsed Template Constants**/
         PROCESSED_TEMPLATE: "processedTemplate",
@@ -1771,8 +1758,6 @@ voltmx.sdk.constants =
         JSON_DATA : "jsondata",
         IGNORE_MESSAGE_INTEGRITY : "ignoreMessageIntegrity",
         KEY_MESSAGE: "message",
-        KEY_CODE : "code",
-        EQUAL_TO : "=",
 
         /** License Constants **/
         LICENSE_SESSION_TIMEOUT_IN_MILLIS : 14400000,
@@ -1788,11 +1773,7 @@ voltmx.sdk.constants =
         /** Encryption Constants **/
         ENCRYPTION_ALGO_AES : "aes",
         HASH_FUNCTION_MD5 : "md5",
-        HASH_FUNCTION_SHA2 : "sha2",
         ENC_TYPE_PASSPHRASE : "passphrase",
-        ENC_PASSPHRASE_HASH_ALGO : "passphrasehashalgo",
-        AES_ALGO_KEY_STRENGTH_128 : 128,
-        AES_ALGO_KEY_STRENGTH_256 : 256,
         ENCRYPTION_APPCONFIG_FLAG : "appConfig_v1",
         SHARED_CLIENT_IDENTIFIER : "shared_client_identifier",
         MOBILE_FABRIC_SERVICE_DOC : "mobileFabricServiceDoc",
@@ -1804,20 +1785,6 @@ voltmx.sdk.constants =
         /**Persist login constants**/
         PERSISTED_AUTH_RESPONSE : "persistedAuthResponse",
         PERSIST_LOGIN_RESPONSE_FLAG : "persistLoginResponseFlag",
-        CUSTOM_DATA_SAVE_HANDLE : "customDataSaveHandle",
-
-        /**single window login constants**/
-        NO_POP_UP : "noPopup",
-        LOGIN_OPTIONS : "loginOptions",
-        URL_TYPE : "url_type",
-        METADATA_MANAGER_FOR_LOGIN_IN_SAME_WINDOW_OBJECT : "metadata_manager_for_login_in_same_window_object",
-        APP_VERIFIER_MW_STORE_ENDPOINT : "/ClientState",
-        IS_ERROR : "isError",
-        LOGIN_RESPONSE : "LOGIN_RESPONSE",
-        SINGLE_WINDOW_LOGIN_BODY_PARAMS : "single_window_login_body_params",
-        KEY_IS_SAME_WINDOW : "isSameWindow",
-        KEY_METADATA_SDK_LOGIN_FOR_SAME_WINDOW : "key_metadata_sdk_login_for_same_window",
-        KEY_APPCONFIG_FOR_SINGLE_WINDOW_LOGIN : "appConfigForSingleWindowLogin",
 
         /**Offline login constants**/
         OFFLINE_LOGIN_AUTH_RESPONSE: "authResponse",
@@ -1833,23 +1800,13 @@ voltmx.sdk.constants =
         BACKEND_REFRESH_TOKEN : "backendRefreshToken",
         ENABLE_REFRESH_LOGIN : "enable_refresh_login",
         BACKEND_REFRESH_TOKENS : "backend_refresh_tokens",
-        RETAIN_BACKEND_REFRESH_TOKEN : "retain_backend_refresh_token",
         LOGIN_PROFILES : "profiles",
         LOGIN_PROVIDER_TYPE : "provider_type",
 
         /**Integration service constants**/
         INTEGRATION_SERVICE_KEY : "integsvc",
         INTEGRATION_INTERNAL_LOGOUT_URL :"_internal_logout",
-        INTEGRATION_INTERNAL_CLEAR_SESSION_ENDPOINT  :"clearSession",
-
-        /** SDK Universal Constants **/
-        CLIENT_SDK_UUID: "clientUUID",
-        CLIENT_SDK_UNIVERSAL_SALT: "sdkIdentifier",
-
-        /**custom params for oauth**/
-        CUSTOM_QUERY_PARAMS_FOR_OAUTH : "customQueryParamsForOAuth",
-        CUSTOM_OAUTH_PARAMS : "customOAuthParams",
-        LOGOUT_OPTIONS : "logoutOptions"
+        INTEGRATION_INTERNAL_CLEAR_SESSION_ENDPOINT  :"clearSession"
     };
 
 if (typeof(voltmx.sdk) === "undefined") {
@@ -2004,14 +1961,6 @@ voltmx.sdk.error.getMFcodeErrObj = function(mfcode, message, details, errMessage
 		}
 		errorObj.opstatus = voltmx.sdk.errorcodes.invalid_user_app_services
 		errorObj.message = message;
-	} else if(mfcode === "Auth-128"){
-		errorObj.message = voltmx.sdk.errormessages.invalid_pkce_params;
-		errorObj.opstatus = voltmx.sdk.errorcodes.invalid_pkce_params;
-	} else if(mfcode === "Auth-129"){
-		errorObj.details.errmsg = voltmx.sdk.errormessages.CORS_disabled_at_identity;
-		errorObj.details.message = voltmx.sdk.errormessages.CORS_disabled_at_identity;
-		errorObj.message = voltmx.sdk.errormessages.CORS_disabled_at_identity
-		errorObj.opstatus = voltmx.sdk.errorcodes.CORS_disabled_at_identity;
 	} else {
 		errorObj.opstatus = voltmx.sdk.errorcodes.default_code
 		errorObj.message = errMessagePrefix + voltmx.sdk.errormessages.default_message
@@ -2034,20 +1983,6 @@ function getAuthErrorMessage(mfcode) {
 	} else {
 		return mfcode + ":" + voltmx.sdk.errormessages.default_message
 	}
-}
-
-voltmx.sdk.error.getSingleWindowLoginErrObj = function (errorCode, errorMessage) {
-	var errorObject = {};
-	errorObject[voltmx.sdk.constants.KEY_CODE] = errorCode;
-	errorObject[voltmx.sdk.constants.KEY_MESSAGE] = errorMessage;
-	return errorObject;
-}
-
-voltmx.sdk.error.getErrObj = function(errorCode, errorMessage) {
-	var err = {};
-	err[voltmx.sdk.constants.KEY_CODE] = errorCode;
-	err[voltmx.sdk.constants.KEY_MESSAGE] = errorMessage;
-	return err;
 }
 
 voltmx.sdk.error.getObjectServiceErrObj = function(errResponse) {
@@ -2192,40 +2127,6 @@ voltmx.sdk.errormessages.identity_session_inactive = "Identity Provider's sessio
 voltmx.sdk.errorcodes.refresh_login_tokens_null_or_undefined = 108;
 voltmx.sdk.errormessages.refresh_login_tokens_null_or_undefined = "Required refresh tokens to enable refresh login are null or undefined";
 
-voltmx.sdk.errorcodes.app_verifier_save_failed = 109;
-voltmx.sdk.errormessages.app_verifier_save_failed = "Unable to store app verifier at middleware server";
-
-voltmx.sdk.errorcodes.app_verifier_retrieve_failed = 110;
-voltmx.sdk.errormessages.app_verifier_retrieve_failed = "Unable to retrieve app verifier from middleware server";
-
-voltmx.sdk.errorcodes.invalid_custom_data_save_handle = 111;
-voltmx.sdk.errormessages.invalid_custom_data_save_handle = "CustomDataSaveHandle should be function and should " +
-                                                            "accept successCallback and failureCallback";
-
-voltmx.sdk.errorcodes.custom_data_save_handle_failed = 112;
-voltmx.sdk.errormessages.custom_data_save_handle_failed = "CustomDataSaveHandle failed by user";
-
-voltmx.sdk.errorcodes.partial_login_error = 113;
-voltmx.sdk.errormessages.partial_login_error = "The application was launched with code query param but is not a continued login process";
-
-voltmx.sdk.errorcodes.CORS_disabled_at_identity = 114;
-voltmx.sdk.errormessages.CORS_disabled_at_identity = "Login Failed. PKCE parameters are missing, please check if CORS setting is properly configured in Fabric Identity";
-
-voltmx.sdk.errorcodes.invalid_pkce_params = 115;
-voltmx.sdk.errormessages.invalid_pkce_params = "Invalid PKCE params";
-
-voltmx.sdk.errorcodes.invalid_appconfig = 116;
-voltmx.sdk.errormessages.invalid_appconfig = "Appconfig is null or undefined.";
-
-voltmx.sdk.errorcodes.error_no_metadata_found = 117;
-voltmx.sdk.errormessages.error_no_metadata_found = "No metadata was found to continue with single window login";
-
-voltmx.sdk.errorcodes.invalid_auth_code = 118;
-voltmx.sdk.errormessages.invalid_auth_code = "No Auth Code found in the Url.";
-
-voltmx.sdk.errorcodes.pkce_params_generation_failed = 119;
-voltmx.sdk.errormessages.pkce_params_generation_failed = "Login Failed. Error occured while generating PKCE parameters.";
-
 voltmx.sdk.errorcodes.default_code = 100;
 voltmx.sdk.errormessages.default_message = "UnhandledMFcode";
 
@@ -2323,171 +2224,16 @@ voltmx.sdk.errorConstants = {
     INTEGRITY_FAILURE: "INTEGRITY_FAILURE",
     INVALID_API_FAILURE:"INVALID_API_FAILURE"
 };
-
-
-voltmx.sdk.offline = voltmx.sdk.offline || {};
-voltmx.sdk.sso = voltmx.sdk.sso || {};
-voltmx.sdk.pkceUtilityInstance = null;
-voltmx.sdk.isSSOLoginSuccess = voltmx.sdk.isSSOLoginSuccess || true;
-voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh = {};
-
-//#ifdef PLATFORM_PLAIN_JS
-/**
- * This method will complete OAuth login in plainJS
- * @param successCallback
- * @param failureCallback
- */
-voltmx.sdk.performNoPopUpLogin = function(successCallback, failureCallback) {
-	
-	var metaDataManagerForLoginInSameWindow = voltmx.sdk.util.getMetaDataManagerForLoginInSameWindow();
-	metaDataManagerForLoginInSameWindow.initialize();
-	metaDataManagerForLoginInSameWindow.loadSavedMetaData();
-	var appConfigString = metaDataManagerForLoginInSameWindow.getItem(voltmx.sdk.constants.KEY_APPCONFIG_FOR_SINGLE_WINDOW_LOGIN);
-
-	var url = window.location.href;
-	var queryParamsAsString = url.split("?")[1];
-	var codeValue = null;
-
-	if (!voltmx.sdk.isNullOrUndefined(queryParamsAsString) &&
-		queryParamsAsString.indexOf(voltmx.sdk.constants.DEEPLINK_VALID_PARAM + voltmx.sdk.constants.EQUAL_TO) !== -1) {
-		var queryParamsAsArray = queryParamsAsString.split('&');
-		for (var index = 0; index < queryParamsAsArray.length; index++) {
-			var keyValueAsArray = queryParamsAsArray[index].split(voltmx.sdk.constants.EQUAL_TO);
-			if (keyValueAsArray[0] === voltmx.sdk.constants.DEEPLINK_VALID_PARAM) {
-				codeValue = keyValueAsArray[1];
-				break;
-			}
-		}
-	}
-
-	voltmx.application.removeQueryParamsByKey(voltmx.sdk.constants.DEEPLINK_VALID_PARAM);
-	
-	if(!voltmx.sdk.isNullOrUndefined(appConfigString) && voltmx.sdk.isJson(appConfigString)) {
-		appConfig = JSON.parse(appConfigString);
-		var sdkInstance = new voltmx.sdk();
-		sdkInstance.initWithServiceDoc(appConfig.appKey, appConfig.appSecret, appConfig.svcDoc);
-		if(!voltmx.sdk.isNullOrUndefined(codeValue)) {
-			voltmx.sdk.logsdk.info("voltmx.sdk.performNoPopUpLogin: Auth Code found in url, completing single window login.");
-			voltmx.sdk.completeSingleWindowLogin(codeValue, validateAndInvokeCallback);
-		} else {
-			// Invoking failureCallback only when code is null and single window login is still in progress.
-			// Checking the status of single window login from metadata.
-			voltmx.sdk.logsdk.error("voltmx.sdk.performNoPopUpLogin: No Auth Code found in Url.");
-			var errorObject = voltmx.sdk.error.getSingleWindowLoginErrObj(voltmx.sdk.errorcodes.invalid_auth_code,
-				voltmx.sdk.errormessages.invalid_auth_code);
-			metaDataManagerForLoginInSameWindow.destroy();
-			voltmx.sdk.verifyAndCallClosure(failureCallback, errorObject);
-		}
-	} else {
-		if(!voltmx.sdk.isNullOrUndefined(codeValue)) {
-			// Invoking failureCallback when code is NOT null and metadata is NOT found.
-			voltmx.sdk.logsdk.error("voltmx.sdk.performNoPopUpLogin: No metadata found.");
-			var errorObject = voltmx.sdk.error.getSingleWindowLoginErrObj(voltmx.sdk.errorcodes.invalid_appconfig,
-			voltmx.sdk.errormessages.invalid_appconfig);
-			metaDataManagerForLoginInSameWindow.destroy();
-			voltmx.sdk.verifyAndCallClosure(failureCallback, errorObject);
-		} else {
-			metaDataManagerForLoginInSameWindow.destroy();
-		}
-	}
- 
-	function validateAndInvokeCallback(res){
-		if(!voltmx.sdk.isNullOrUndefined(res)) {
-			if(!res.isError) {
-				voltmx.sdk.logsdk.info("voltmx.sdk.performNoPopUpLogin: Single window login completed successfully.");
-				voltmx.sdk.verifyAndCallClosure(successCallback, res[voltmx.sdk.constants.LOGIN_RESPONSE]);
-			} else {
-				voltmx.sdk.logsdk.error("voltmx.sdk.performNoPopUpLogin: Single window login failed with error : " + JSON.stringify(res));
-				voltmx.sdk.verifyAndCallClosure(failureCallback, res[voltmx.sdk.constants.LOGIN_RESPONSE]);
-			}
-		} else {
-			voltmx.sdk.logsdk.error("voltmx.sdk.performNoPopUpLogin: Single window login failed.");
-			voltmx.sdk.verifyAndCallClosure(failureCallback);
-		}
-	}
-}
-//#endif
-
-/**
- * This function will resume the oauth2 login process after oauth code retrieval part.
- * This function takes auth code as input and will call loginCompleteCallback with appropriate repsonse
- * @param code
- * @param loginCompleteCallback
- */
-voltmx.sdk.completeSingleWindowLogin = function (code, loginCompleteCallback) {
-	voltmx.sdk.logsdk.info("Entering completeSingleWindowLogin");
-	voltmx.application.removeQueryParamsByKey(voltmx.sdk.constants.DEEPLINK_VALID_PARAM);
-	if (voltmx.sdk.isNullOrUndefined(code)) {
-		voltmx.sdk.logsdk.info("code is undefined");
-		return loginCompleteCallback();
-	}
-
-	var bodyParams = {};
-	var loginOptions = null;
-	var metaDataManagerForLoginInSameWindow = voltmx.sdk.util.getMetaDataManagerForLoginInSameWindow();
-
-	function performTokenCall(networkResponseJSON) {
-		voltmx.sdk.logsdk.info("Entering performTokenCall");
-		if(is_enable_identity_pkce === true && !voltmx.sdk.isNullOrUndefined(networkResponseJSON[voltmx.sdk.constants.APP_VERIFIER])){
-			bodyParams[voltmx.sdk.constants.APP_VERIFIER] = networkResponseJSON[voltmx.sdk.constants.APP_VERIFIER];
-		}
-		bodyParams[voltmx.sdk.constants.DEEPLINK_VALID_PARAM] = code;
-
-		delete loginOptions[voltmx.sdk.constants.NO_POP_UP]; //avoiding circular logins
-
-		//make login
-		var options = {};
-		options[voltmx.sdk.constants.LOGIN_OPTIONS] = loginOptions;
-		options[voltmx.sdk.constants.SINGLE_WINDOW_LOGIN_BODY_PARAMS] = bodyParams; //this param will tell us to by pass auth code process
-		var provider = metaDataManagerForLoginInSameWindow.getItem(voltmx.sdk.constants.KEY_PROVIDER);
-		var sdkInstance = voltmx.sdk.getDefaultInstance();
-		var identityInstance = sdkInstance.getIdentityService(provider);
-		identityInstance.login(options, successCallback, failureCallback);
-	}
-
-	function successCallback(successResponse) {
-		var successLoginResponse = {};
-		successLoginResponse[voltmx.sdk.constants.IS_ERROR] = false;
-		successLoginResponse[voltmx.sdk.constants.LOGIN_RESPONSE] = successResponse;
-		voltmx.sdk.logsdk.info("Exiting completeSingleWindowLogin with success");
-		voltmx.sdk.verifyAndCallClosure(loginCompleteCallback, successLoginResponse)
-	}
-
-	function failureCallback(errorObject) {
-		var errorLoginResponse = {};
-		errorLoginResponse[voltmx.sdk.constants.IS_ERROR] = true;
-		errorLoginResponse[voltmx.sdk.constants.LOGIN_RESPONSE] = errorObject;
-		metaDataManagerForLoginInSameWindow.destroy();
-		voltmx.sdk.logsdk.info("Exiting completeSingleWindowLogin with failure");
-		voltmx.sdk.verifyAndCallClosure(loginCompleteCallback, errorLoginResponse)
-	}
-
-	metaDataManagerForLoginInSameWindow.initialize();
-	metaDataManagerForLoginInSameWindow.loadSavedMetaData(); //gets the saved data from local
-
-	loginOptions = metaDataManagerForLoginInSameWindow.getItem(voltmx.sdk.constants.LOGIN_OPTIONS);
-	is_enable_identity_pkce = metaDataManagerForLoginInSameWindow.getItem(voltmx.sdk.constants.ENABLE_IDENTITY_PKCE);
-	if(voltmx.sdk.isNullOrUndefined(loginOptions)){
-		voltmx.sdk.logsdk.error(voltmx.sdk.errormessages.partial_login_error);
-		var errorObject = voltmx.sdk.error.getSingleWindowLoginErrObj(voltmx.sdk.errorcodes.partial_login_error,
-			voltmx.sdk.errormessages.partial_login_error);
-		voltmx.sdk.verifyAndCallClosure(failureCallback,errorObject);
-		return;
-	}
-
-	if(is_enable_identity_pkce === true) {
-		metaDataManagerForLoginInSameWindow.retrieveAppVerifier(performTokenCall, failureCallback);
-	} else {
-		performTokenCall({});
-	}
-}
-
 /**
  * Method to create the Identity service instance with the provided provider name.
  * @param {string} providerName - Name of the provider
  * @returns {IdentityService} Identity service instance
  */
 
+voltmx.sdk.offline = voltmx.sdk.offline || {};
+voltmx.sdk.sso = voltmx.sdk.sso || {};
+voltmx.sdk.isSSOLoginSuccess = voltmx.sdk.isSSOLoginSuccess || true;
+ 
 voltmx.sdk.prototype.getIdentityService = function(providerName) {
 	voltmx.sdk.logsdk.perf("Executing voltmx.sdk.prototype.getIdentityService");
 	if (!voltmx.sdk.isInitialized) {
@@ -2546,11 +2292,9 @@ function IdentityService(voltmxRef, rec) {
 	var _type = serviceObj.type;
 	var _serviceUrl = stripTrailingCharacter(serviceObj.url, "/");
 	var _providerName = serviceObj.prov;
-	var is_enable_identity_pkce = serviceObj.enable_identity_pkce === true;
 	//refresh login changes
 	var refreshLoginEnabled = false;
 	var refreshLoginTokenStoreUtilityObject = voltmx.sdk.util.getRefreshLoginTokenStoreUtility();
-	var metaDataManagerForLoginInSameWindow = voltmx.sdk.util.getMetaDataManagerForLoginInSameWindow();
 	var providerType = rec[voltmx.sdk.constants.LOGIN_PROVIDER_TYPE];
 
 	voltmx.sdk.logsdk.debug("### AuthService:: initialized for provider " + _providerName + " with type " + _type);
@@ -2647,8 +2391,6 @@ function IdentityService(voltmxRef, rec) {
 		function serviceDocCallback() {
 			//if refresh login is enabled, store the required internal refresh and backend refresh tokens in data store
 			if (refreshLoginEnabled) {
-
-				voltmxRef.refreshLoginProvidersSet.add(_providerName);
 				storeRefreshLoginTokens(networkResponse);
 			}
 			voltmx.sdk.verifyAndCallClosure(successCallback, response);
@@ -2708,12 +2450,8 @@ function IdentityService(voltmxRef, rec) {
 	 */
 	this.login = function(options, successCallback, failureCallback) {
 		voltmx.sdk.logsdk.perf("Executing Login");
-		voltmx.sdk.pkceUtilityInstance =  null;
 		var continueOnRefreshError = true;
 		var customQueryParamsForOAuth = null;
-		var customOAuthParams = null;
-		var isSingleWindowLoginEnabled = false;
-		var customDaveSaveHandleFunction = null;
 
 		function invokeAjaxCall(url, params, headers) {
 
@@ -2739,11 +2477,6 @@ function IdentityService(voltmxRef, rec) {
 			headers[voltmx.sdk.constants.HTTP_CONTENT_HEADER] = voltmx.sdk.constants.CONTENT_TYPE_FORM_URL_ENCODED;
 
 			populateHeaderWithFoundryAppVersion(headers);
-
-			//populating custom oAuth params
-			if (providerType === voltmx.sdk.constants.AUTH_PROVIDER_TYPE_OAUTH2) {
-				voltmx.sdk.util.populateCustomOAuthParams(params, customOAuthParams);
-			}
 
 			if(voltmxRef.reportingheaders_allowed) {
 				// get reporting data for login operation
@@ -2801,19 +2534,7 @@ function IdentityService(voltmxRef, rec) {
 				//Passing enable_refresh_login as body param to login call to get the backend refresh token as part of initial login response
 				if(refreshLoginEnabled) {
 					params[voltmx.sdk.constants.ENABLE_REFRESH_LOGIN] = true;
-					voltmxRef.refreshLoginProvidersSet.add(_providerName);
-				} else{
-					if(voltmxRef.refreshLoginProvidersSet.has(_providerName)){
-						voltmxRef.refreshLoginProvidersSet.delete(_providerName);
-					}
 				}
-			}
-
-			if(is_enable_identity_pkce) {
-				if(voltmx.sdk.isNullOrUndefined(networkOptions[voltmx.sdk.constants.KEY_XML_HTTP_REQUEST_OPTIONS])) {
-					networkOptions[voltmx.sdk.constants.KEY_XML_HTTP_REQUEST_OPTIONS] = {};
-				}
-				networkOptions[voltmx.sdk.constants.KEY_XML_HTTP_REQUEST_OPTIONS][voltmx.sdk.constants.ENABLE_WITH_CREDENTIALS] = true;
 			}
 
 			networkProvider.post(endPointUrl, params, headers,
@@ -2826,17 +2547,13 @@ function IdentityService(voltmxRef, rec) {
 				null, networkOptions);
 		}
 
-		function loginHelper(url, params, headers, isError, errorObject) {
+		function loginHelper(url,params,headers,isError){
 			voltmx.sdk.logsdk.trace("Entering loginHelper, isError = " + isError);
 			if(isError) {
 				var err = {};
-				if (!voltmx.sdk.isNullOrUndefined(errorObject)) {
-					err = errorObject;
-				} else {
-					err.message = "Login Failed";
-					err.opstatus = voltmx.sdk.errorcodes.transient_login_fail;
-					err.code = (params && params.error) ? params.error : "";
-				}
+				err.message = "Login Failed";
+				err.opstatus = voltmx.sdk.errorcodes.transient_login_fail;
+				err.code = (params && params.error)? params.error : "";
 				voltmx.sdk.verifyAndCallClosure(failureCallback,err);
 				return;
 			}
@@ -2883,7 +2600,7 @@ function IdentityService(voltmxRef, rec) {
 				offlineEnabled = loginOptions["isOfflineEnabled"] || false;
 				voltmx.sdk.offline.isOfflineEnabled = voltmx.sdk.offline.isOfflineEnabled || offlineEnabled;
 				voltmx.sdk.sso.isSSOEnabled = loginOptions["isSSOEnabled"] || false;
-				customQueryParamsForOAuth = loginOptions[voltmx.sdk.constants.CUSTOM_QUERY_PARAMS_FOR_OAUTH];
+				customQueryParamsForOAuth = loginOptions["customQueryParamsForOAuth"];
 
 				if(loginOptions["continueOnRefreshError"] === false) {
 					continueOnRefreshError  = false;
@@ -2894,41 +2611,10 @@ function IdentityService(voltmxRef, rec) {
 					voltmx.sdk.offline.persistToken = true;
 				}
 
-				refreshLoginEnabled = false;
-				if (providerType === voltmx.sdk.constants.AUTH_PROVIDER_TYPE_OAUTH2) {
-					//Extracting enable_refresh_login flag from login options
-					if (typeof loginOptions[voltmx.sdk.constants.ENABLE_REFRESH_LOGIN] === "boolean") {
-						refreshLoginEnabled = loginOptions[voltmx.sdk.constants.ENABLE_REFRESH_LOGIN];
-					} else {
-						voltmx.sdk.logsdk.warn("the value of " + voltmx.sdk.constants.ENABLE_REFRESH_LOGIN
-							+ " should be of boolean type");
-					}
-
-					//Extracting customOAuthParams from login options
-					customOAuthParams = loginOptions[voltmx.sdk.constants.CUSTOM_OAUTH_PARAMS];
-					if(!voltmx.sdk.util.isNullOrUndefinedOrEmptyObject(customOAuthParams)) {
-						voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh[_providerName] = {};
-						//populating custom oAuth params in global voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh object so that these
-						// params will be used in /claims?refresh=true call which happens when server throws 401 status code incase of service call
-						// failure
-						voltmx.sdk.util.populateCustomOAuthParams(voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh[_providerName], customOAuthParams);
-					}
-				}
-
-				//no popup option in single window login are only meant for SPA/DW and PlainJS apps
-				if (voltmx.sdk.getPlatformName() === voltmx.sdk.constants.PLATFORM_THIN_CLIENT
-					&& loginOptions[voltmx.sdk.constants.NO_POP_UP] === true
-					&& !voltmx.sdk.isNullOrUndefined(voltmx.license.saveCurrentSessionForReuse))
-				{
-					isSingleWindowLoginEnabled = true;
-					customDaveSaveHandleFunction = loginOptions[voltmx.sdk.constants.CUSTOM_DATA_SAVE_HANDLE];
-					if(!voltmx.sdk.util.isPlatformPlainJS() && voltmx.sdk.getSdkType() !== voltmx.sdk.constants.SDK_TYPE_PHONEGAP) {
-						voltmx.license.saveCurrentSessionForReuse();
-					}
-					metaDataManagerForLoginInSameWindow.initialize();
-					metaDataManagerForLoginInSameWindow.setItem(voltmx.sdk.constants.LOGIN_OPTIONS, loginOptions);
-					metaDataManagerForLoginInSameWindow.setItem(voltmx.sdk.constants.KEY_PROVIDER, _providerName);
-					metaDataManagerForLoginInSameWindow.setItem(voltmx.sdk.constants.URL_TYPE, "/" + _type + "/token");
+				//Extracting enable_refresh_login flag from login options
+				if((providerType === voltmx.sdk.constants.AUTH_PROVIDER_TYPE_OAUTH2) &&
+					(loginOptions[voltmx.sdk.constants.ENABLE_REFRESH_LOGIN] === true)) {
+					refreshLoginEnabled = loginOptions[voltmx.sdk.constants.ENABLE_REFRESH_LOGIN];
 				}
 			} else {
 				voltmx.sdk.sso.isSSOEnabled = false;
@@ -2937,49 +2623,41 @@ function IdentityService(voltmxRef, rec) {
 
 		function extractOauthOptions(authOptions) {
 			var _oauthOptions = {};
-			_oauthOptions[voltmx.sdk.constants.CUSTOM_QUERY_PARAMS_FOR_OAUTH] =  customQueryParamsForOAuth;
-			_oauthOptions[voltmx.sdk.constants.IS_ENABLE_IDENTITY_PKCE] = is_enable_identity_pkce === true;
-
-			if (voltmx.sdk.util.isValidString(authOptions[voltmx.sdk.constants.IE11_CROSS_DOMAIN_OAUTH_BASE_URL])) {
-				_oauthOptions[voltmx.sdk.constants.IE11_CROSS_DOMAIN_OAUTH_BASE_URL] = authOptions[voltmx.sdk.constants.IE11_CROSS_DOMAIN_OAUTH_BASE_URL];
-			}
-			if(voltmx.sdk.util.hasBrowserWidget(authOptions)) {
-				_oauthOptions[voltmx.sdk.constants.BROWSER_WIDGET] = authOptions[voltmx.sdk.constants.BROWSER_WIDGET];
+			_oauthOptions["customQueryParamsForOAuth"] =  customQueryParamsForOAuth;
+			if (voltmx.sdk.getSdkType() === voltmx.sdk.constants.SDK_TYPE_PLAIN_JS) {
+				_oauthOptions["appSecret"] = mainRef.appSecret;
+				_oauthOptions["serviceDoc"] = mainRef.config;
+				if (authOptions["noPopup"] == true){
+					_oauthOptions["noPopup"] = true;
+				}
+				if(authOptions["include_profile"]){
+					_oauthOptions["include_profile"] = authOptions["include_profile"]
+				}
 			} else {
-				if (authOptions["UseDeviceBrowser"]) {
-					//Validating to check the existence of param "UseDeviceBrowser".
-					// if found login url will be opened in device native browser, else in browser widget.
-					_oauthOptions["UseDeviceBrowser"] = authOptions["UseDeviceBrowser"];
+				if (voltmx.sdk.util.isValidString(authOptions[voltmx.sdk.constants.IE11_CROSS_DOMAIN_OAUTH_BASE_URL])) {
+					_oauthOptions[voltmx.sdk.constants.IE11_CROSS_DOMAIN_OAUTH_BASE_URL] = authOptions[voltmx.sdk.constants.IE11_CROSS_DOMAIN_OAUTH_BASE_URL];
 				}
-				if (authOptions[voltmx.sdk.constants.OAUTH_REDIRECT_SUCCESS_URL]) {
-					//Validating to check the existence of param "success_url".
-					// if found after login success we will redirect to the url specified in param "success_url".
-					var success_url = authOptions[voltmx.sdk.constants.OAUTH_REDIRECT_SUCCESS_URL];
-					//Encoding is being done specifically for android because, in android voltmx.application.openUrl is not
-					// opening the url without encoding where as in ios its encoding and opening.
-					if (voltmx.sdk.getPlatformName() === voltmx.sdk.constants.PLATFORM_ANDROID) {
-						//decoding and encoding, to handle the case where in the user himself is giving us the encoded value.
-						success_url = encodeURIComponent(decodeURIComponent(success_url));
+				if(voltmx.sdk.util.hasBrowserWidget(authOptions)) {
+					_oauthOptions[voltmx.sdk.constants.BROWSER_WIDGET] = authOptions[voltmx.sdk.constants.BROWSER_WIDGET];
+				} else {
+					if (authOptions["UseDeviceBrowser"]) {
+						//Validating to check the existence of param "UseDeviceBrowser".
+						// if found login url will be opened in device native broser, else in browser widget.
+						_oauthOptions["UseDeviceBrowser"] = authOptions["UseDeviceBrowser"];
 					}
-					_oauthOptions[voltmx.sdk.constants.OAUTH_REDIRECT_SUCCESS_URL] = success_url;
+					if (authOptions[voltmx.sdk.constants.OAUTH_REDIRECT_SUCCESS_URL]) {
+						//Validating to check the existence of param "success_url".
+						// if found after login success we will redirect to the url specified in param "success_url".
+						var success_url = authOptions[voltmx.sdk.constants.OAUTH_REDIRECT_SUCCESS_URL];
+						//Encoding is being done specifically for android because, in android voltmx.application.openUrl is not
+						// opening the url without encoding where as in ios its encoding and opening.
+						if (voltmx.sdk.getPlatformName() === voltmx.sdk.constants.PLATFORM_ANDROID) {
+							//decoding and encoding, to handle the case where in the user himself is giving us the encoded value.
+							success_url = encodeURIComponent(decodeURIComponent(success_url));
+						}
+						_oauthOptions[voltmx.sdk.constants.OAUTH_REDIRECT_SUCCESS_URL] = success_url;
+					}
 				}
-
-				//nopop of single window login are only meant for SPA/DW apps
-				if (voltmx.sdk.getPlatformName() === voltmx.sdk.constants.PLATFORM_THIN_CLIENT
-					&& isSingleWindowLoginEnabled === true)
-				{
-					_oauthOptions[voltmx.sdk.constants.NO_POP_UP] = isSingleWindowLoginEnabled;
-					_oauthOptions[voltmx.sdk.constants.CUSTOM_DATA_SAVE_HANDLE] = customDaveSaveHandleFunction;
-					_oauthOptions[voltmx.sdk.constants.METADATA_MANAGER_FOR_LOGIN_IN_SAME_WINDOW_OBJECT] = metaDataManagerForLoginInSameWindow;
-				}
-			}
-
-			//no popup in single window login are only meant for SPA/DW and PlainJS apps
-			if (voltmx.sdk.getPlatformName() === voltmx.sdk.constants.PLATFORM_THIN_CLIENT
-				&& isSingleWindowLoginEnabled === true) {
-				_oauthOptions[voltmx.sdk.constants.NO_POP_UP] = isSingleWindowLoginEnabled;
-				_oauthOptions[voltmx.sdk.constants.CUSTOM_DATA_SAVE_HANDLE] = customDaveSaveHandleFunction;
-				_oauthOptions[voltmx.sdk.constants.METADATA_MANAGER_FOR_LOGIN_IN_SAME_WINDOW_OBJECT] = metaDataManagerForLoginInSameWindow;
 			}
 			return _oauthOptions;
 		}
@@ -3036,14 +2714,16 @@ function IdentityService(voltmxRef, rec) {
 						loginHelper("/login", {}, {});
 					}
 				} else {
-					//only for thin clients where code is already present and we need to do token call
-					if (voltmx.sdk.getPlatformName() === voltmx.sdk.constants.PLATFORM_THIN_CLIENT
-						&& !voltmx.sdk.isNullOrUndefined(authOptions[voltmx.sdk.constants.SINGLE_WINDOW_LOGIN_BODY_PARAMS])){
-						var bodyParams = authOptions[voltmx.sdk.constants.SINGLE_WINDOW_LOGIN_BODY_PARAMS];
-						var urlType = metaDataManagerForLoginInSameWindow.getItem(voltmx.sdk.constants.URL_TYPE);
-						metaDataManagerForLoginInSameWindow.destroy(); // no longer needed saved data
-						loginHelper(urlType,bodyParams, {}); //token call
-					}else{
+					if (voltmx.sdk.getSdkType() === voltmx.sdk.constants.SDK_TYPE_PLAIN_JS) {
+						if (authOptions[voltmx.sdk.constants.DEEPLINK_VALID_PARAM] && authOptions["urlType"]){
+							//Validating the identity service once after deeplink is redirected. Params "code" & "urlType" are mandatory and are used to distinguish the request.
+							loginForDeeplink(authOptions);
+						} else {
+							OAuthHandler(_serviceUrl, _providerName, mainRef.appKey, loginHelper, _type,
+								extractOauthOptions(authOptions),
+								isMFVersionCompatible());
+						}
+					} else {
 						OAuthHandler(_serviceUrl, _providerName, mainRef.appKey, loginHelper, _type,
 							extractOauthOptions(authOptions),
 							isMFVersionCompatible());
@@ -3375,34 +3055,19 @@ function IdentityService(voltmxRef, rec) {
 		function logoutHandler() {
 			_logout(successCallback, failureCallback, options);
 		}
-
-		function claimsRefreshFailureCallback() {
-			voltmx.sdk.logsdk.error("### AuthService::logout claimsRefresh failed");
-			logoutHandler();
-		}
 		if(voltmx.sdk.getPlatformName() !== voltmx.sdk.constants.PLATFORM_WINDOWS) {
 			//if the user logged in using offline logout
 			if (offlineEnabled == true && voltmx.sdk.getSdkType() === voltmx.sdk.constants.SDK_TYPE_IDE && _type === "basic" && !voltmx.sdk.isNetworkAvailable()) {
 				logoutHandler();
 			} else {
-				voltmx.sdk.claimsRefresh(logoutHandler, claimsRefreshFailureCallback);
+				voltmx.sdk.claimsRefresh(logoutHandler, failureCallback);
 			}
 		}else{
-			voltmx.sdk.claimsRefresh(logoutHandler, claimsRefreshFailureCallback);
+			voltmx.sdk.claimsRefresh(logoutHandler, failureCallback);
 		}
 	};
 
 	function _logout(successCallback, failureCallback, options) {
-		var customOAuthParams = null;
-
-		function extractLogoutOptions(logoutOptions) {
-			if(!voltmx.sdk.util.isNullOrUndefinedOrEmptyObject(logoutOptions)){
-				if(providerType === voltmx.sdk.constants.AUTH_PROVIDER_TYPE_OAUTH2) {
-					customOAuthParams = logoutOptions[voltmx.sdk.constants.CUSTOM_OAUTH_PARAMS];
-				}
-			}
-		}
-
 	    function invokeLogoutHelper(formData, invokeLogoutSuccess, invokeLogoutFailure){
 
             var claimsTokenValue = null;
@@ -3437,11 +3102,6 @@ function IdentityService(voltmxRef, rec) {
                 }
             }
 
-			//populating custom oAuth params
-            if(providerType === voltmx.sdk.constants.AUTH_PROVIDER_TYPE_OAUTH2) {
-				voltmx.sdk.util.populateCustomOAuthParams(formData, customOAuthParams);
-			}
-
             populateHeaderWithFoundryAppVersion(headers);
             networkProvider.post(url, formdata, headers,
             function(data) {
@@ -3469,10 +3129,6 @@ function IdentityService(voltmxRef, rec) {
 
 			var pastClaimsToken = voltmxRef.currentClaimToken;
 			var doesSessionNeedsToBeCleanedAtMW = true;
-
-			if(voltmxRef.refreshLoginProvidersSet.has(_providerName)){
-				voltmxRef.refreshLoginProvidersSet.delete(_providerName);
-			}
 
 			//reset all current keys
 			voltmx.sdk.resetCurrentKeys(voltmxRef,_providerName);
@@ -3510,12 +3166,6 @@ function IdentityService(voltmxRef, rec) {
                 //removing SSO token for the provider.
                 voltmx.sdk.util.deleteSSOTokenForProvider(_providerName);
             }
-
-            //reset global customOAuthParams for the logged out provider from global voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh
-			if((providerType === voltmx.sdk.constants.AUTH_PROVIDER_TYPE_OAUTH2) &&
-				!voltmx.sdk.util.isNullOrUndefinedOrEmptyObject(voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh[_providerName])) {
-				voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh[_providerName] = {};
-			}
 
 			if (doesSessionNeedsToBeCleanedAtMW) {
 				//user has no active provider logged in left, we should go for session deletion with MW
@@ -3562,11 +3212,6 @@ function IdentityService(voltmxRef, rec) {
         var formdata = {};
         formdata = {"slo": slo};
 
-        //extract logout options
-		if(!voltmx.sdk.util.isNullOrUndefinedOrEmptyObject(options)) {
-			extractLogoutOptions(options[voltmx.sdk.constants.LOGOUT_OPTIONS]);
-		}
-
 		if(!isLoggedIn()){
 			voltmx.sdk.verifyAndCallClosure(failureCallback, voltmx.sdk.error.getIdentitySessionInactiveErrObj());
 		}
@@ -3596,7 +3241,6 @@ function IdentityService(voltmxRef, rec) {
 			if(voltmx.sdk.util.hasBrowserWidget(options)) {
 				oauthOptions[voltmx.sdk.constants.BROWSER_WIDGET] = options[voltmx.sdk.constants.BROWSER_WIDGET];
 			}
-
             OAuthHandler(_serviceUrl, _providerName, mainRef.appKey, oAuthCallback, _type, oauthOptions);
           }
         }else {
@@ -3676,29 +3320,10 @@ function IdentityService(voltmxRef, rec) {
 					"refresh": "true"
 				}
 			};
-
-			claimsOptions[voltmx.sdk.constants.BODY_PARAMS] = {};
 			if (!voltmx.sdk.isNullOrUndefined(refreshLoginTokenStoreUtilityObject.getBackendRefreshToken(_providerName))) {
 				doesStoredRefreshTokensNeedsUpdate = true;
+				claimsOptions[voltmx.sdk.constants.BODY_PARAMS] = {};
 				claimsOptions[voltmx.sdk.constants.BODY_PARAMS][voltmx.sdk.constants.ENABLE_REFRESH_LOGIN] = true;
-			}
-
-			//populating custom oAuth params
-			if(providerType === voltmx.sdk.constants.AUTH_PROVIDER_TYPE_OAUTH2) {
-				//reset earlier oAuth params in voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh for the current provider
-				if(!voltmx.sdk.util.isNullOrUndefinedOrEmptyObject(options[voltmx.sdk.constants.CUSTOM_OAUTH_PARAMS])) {
-					voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh[_providerName] = {};
-					//populating custom oAuth params in global voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh object so that
-					// these params will be used in /claims?refresh=true call which happens when server throws 401 status code incase
-					// of service call failure
-					voltmx.sdk.util.populateCustomOAuthParams(voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh[_providerName],
-						options[voltmx.sdk.constants.CUSTOM_OAUTH_PARAMS]);
-				}
-
-				//populating custom oAuth params in body params for this refresh call
-				if(!voltmx.sdk.util.isNullOrUndefinedOrEmptyObject(voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh[_providerName])) {
-					voltmx.sdk.util.populateCustomOAuthParams(claimsOptions[voltmx.sdk.constants.BODY_PARAMS], voltmx.sdk.customOAuthParmsForClaimsAndBackendTokenRefresh[_providerName]);
-				}
 			}
 		}
 
@@ -3887,11 +3512,6 @@ function IdentityService(voltmxRef, rec) {
 						}
 					}
 
-					//populating custom oAuth params
-					if(!voltmx.sdk.util.isNullOrUndefinedOrEmptyObject(options)) {
-						voltmx.sdk.util.populateCustomOAuthParams(bodyParams, options[voltmx.sdk.constants.CUSTOM_OAUTH_PARAMS]);
-					}
-
 					bodyParams[voltmx.sdk.constants.KEY_PROVIDER] = _providerName;
 					bodyParams[voltmx.sdk.constants.KEY_GRANT_TYPE] = voltmx.sdk.constants.KEY_REFRESH_TOKEN;
 					bodyParams[voltmx.sdk.constants.KEY_BACKEND_REFRESH_TOKEN] = refreshLoginTokenStoreUtilityObject.getBackendRefreshToken(_providerName);
@@ -3923,37 +3543,31 @@ function IdentityService(voltmxRef, rec) {
 			 * @return boolean
 			 */
 			function doesStoredTokensNeedsToBeRemoved(networkResponse) {
-				var deleteRefreshToken = false;
-				if (!voltmx.sdk.isNullOrUndefined(options) && !voltmx.sdk.isNullOrUndefined(options[voltmx.sdk.constants.RETAIN_BACKEND_REFRESH_TOKEN])) {
-					if (typeof options[voltmx.sdk.constants.RETAIN_BACKEND_REFRESH_TOKEN] === "boolean" && options[voltmx.sdk.constants.RETAIN_BACKEND_REFRESH_TOKEN]) {
-						voltmx.sdk.logsdk.debug("Not deleting refresh token as retain_backend_refresh_token flag is set to true.");
-						return deleteRefreshToken;
-					}
-				}
+				var isStatus400or401 = false;
 				if (!voltmx.sdk.isNullOrUndefined(networkResponse)) {
 					if (networkResponse.hasOwnProperty(voltmx.sdk.constants.HTTP_STATUS_CODE)) {
 						//check for status in httpStatusCode
 						if (networkResponse[voltmx.sdk.constants.HTTP_STATUS_CODE] == voltmx.sdk.constants.HTTP_CODE_400) {
-							deleteRefreshToken = true;
+							isStatus400or401 = true;
 							voltmx.sdk.logsdk.error("got httpStatusCode as 400");
 						} else if (networkResponse[voltmx.sdk.constants.HTTP_STATUS_CODE] == voltmx.sdk.constants.HTTP_CODE_401) {
-							deleteRefreshToken = true;
+							isStatus400or401 = true;
 							voltmx.sdk.logsdk.error("got httpStatusCode as 401");
 						}
 					} else if (networkResponse.hasOwnProperty(voltmx.sdk.constants.KEY_HTTP_RESPONSE)
 						&& networkResponse[voltmx.sdk.constants.KEY_HTTP_RESPONSE].hasOwnProperty(voltmx.sdk.constants.KEY_RESPONSE_CODE)) {
 						//if we didnt get status in httpStatusCode, we might get status under httpresponse object in responsecode
 						if (networkResponse[voltmx.sdk.constants.KEY_HTTP_RESPONSE][voltmx.sdk.constants.KEY_RESPONSE_CODE] == voltmx.sdk.constants.HTTP_CODE_400) {
-							deleteRefreshToken = true;
+							isStatus400or401 = true;
 							voltmx.sdk.logsdk.error("got httpresponse.responsecode as 400");
 						} else if (networkResponse[voltmx.sdk.constants.KEY_HTTP_RESPONSE][voltmx.sdk.constants.KEY_RESPONSE_CODE] == voltmx.sdk.constants.HTTP_CODE_401) {
-							deleteRefreshToken = true;
+							isStatus400or401 = true;
 							voltmx.sdk.logsdk.error("got httpresponse.responsecode as 401");
 						}
 					}
 				}
 
-				return deleteRefreshToken;
+				return isStatus400or401;
 			}
 
 			function makeRefreshLoginCallToIdentity() {
@@ -5633,19 +5247,7 @@ voltmx.sdk.OnlineObjectService = function(voltmxRef, serviceName, serviceInfo) {
         var queryParams = options["queryParams"];
         var url =  tmpDataUrl + "/" + dataObject.objectName;
         if(odataqueryStr != undefined && odataqueryStr != null){
-            if(odataqueryStr.charAt(0)==='$'){
-                odataqueryStr=odataqueryStr.substring(1);
-            }
-            var odatastr="";
-            var odataList=odataqueryStr.split(/&\$(?=(?:(?:[^']*'){2})*[^']*$)/g);
-            for (var list of odataList){
-                var olist=list.split(/=(?=(?:(?:[^']*'){2})*[^']*$)/g)
-                odatastr=odatastr+"&$"+olist[0]+"="+encodeURIComponent(olist[1]);
-            }
-            if(odatastr.charAt(0)==='&'){
-                odatastr=odatastr.substring(1);
-            }
-            url = url + "?" + odatastr;
+            url = url + "?" + encodeURI(odataqueryStr);
             if(queryParams != undefined && queryParams != null){
                 url = url + "&" + voltmx.sdk.util.objectToQueryParams(queryParams);
             }
@@ -6132,7 +5734,6 @@ function invokeObjectOperation(url, svcid, headers, formData, httpMethod, succes
         networkProvider.post(url, formData, defaultHeaders,	networksuccess,	networkerror, "formdata", networkProviderOptions);
     }
 }
-
 voltmx.sdk.util = voltmx.sdk.util || {};
 voltmx.sdk.ObjectServiceUtil = voltmx.sdk.ObjectServiceUtil || {};
 voltmx.sdk.dto = voltmx.sdk.dto || {};
@@ -7063,16 +6664,10 @@ voltmx.sdk.util.isNullOrEmptyString = function (val) {
 function doesMFSupportsAppversioning(){
     // In case of IDE platforms we will check the existence of appConfig.svcDoc.service_doc_etag for compatibility of app version with the MF.
     // In case of plain-js & phone gap initOptions should not be sent during init call.
-    // In case of manual init initially appConfig.svcDoc.service_doc_etag will be undefined. so checking appConfig.isMFApp flag for manual init.
-    // Note: With the latest codes changes as part of APPPLT-7480 in 9.3 version for plainjs voltmx.sdk.constants.SDK_TYPE_IDE will have 'js'.
-    if (voltmx.sdk.getSdkType() === voltmx.sdk.constants.SDK_TYPE_IDE && !voltmx.sdk.isNullOrUndefined(appConfig)){
-        if((!voltmx.sdk.isNullOrUndefined(appConfig.svcDoc) && !voltmx.sdk.isNullOrUndefined(appConfig.svcDoc.service_doc_etag)) || !appConfig.isMFApp ){
-        	return true;
-        } else {
-        	return false;
-        }
+    if (voltmx.sdk.getSdkType() === voltmx.sdk.constants.SDK_TYPE_IDE && !voltmx.sdk.isNullOrUndefined(appConfig) && !voltmx.sdk.isNullOrUndefined(appConfig.svcDoc) && !voltmx.sdk.isNullOrUndefined(appConfig.svcDoc.service_doc_etag)){
+        return true;
     }
-    else if (voltmx.sdk.getSdkType() === voltmx.sdk.constants.SDK_TYPE_PHONEGAP){
+    else if (voltmx.sdk.getSdkType() === voltmx.sdk.constants.SDK_TYPE_PLAIN_JS || voltmx.sdk.getSdkType() === voltmx.sdk.constants.SDK_TYPE_PHONEGAP){
         return true;
     }
     else{
@@ -7439,30 +7034,6 @@ voltmx.sdk.util.getKeyByValue = function(obj, value) {
     }
 };
 
-/***
- * Utility function to populate custom oAuth params in body params
- * @param {Object} bodyParams : body params to be populated
- * @param {Object} customOAuthParams : custom oAuth params to populate
- */
-voltmx.sdk.util.populateCustomOAuthParams = function (bodyParams, customOAuthParams) {
-    if(voltmx.sdk.util.isNullOrUndefinedOrEmptyObject(customOAuthParams)) {
-        return;
-    }
-
-    if(voltmx.sdk.isNullOrUndefined(bodyParams)) {
-        bodyParams = {};
-    }
-
-    for (var customOAuthParamKey in customOAuthParams) {
-        var customOAuthParamValue = customOAuthParams[customOAuthParamKey];
-        if(typeof customOAuthParamValue === "boolean") {
-            customOAuthParamValue = customOAuthParamValue.toString();
-            bodyParams[customOAuthParamKey] = customOAuthParamValue;
-        } else if(!voltmx.sdk.util.isNullOrEmptyString(customOAuthParamValue)){
-            bodyParams[customOAuthParamKey] = customOAuthParamValue;
-        }
-    }
-};
 voltmx.sdk.serviceDoc = function() {
 	voltmx.sdk.logsdk.trace("Entering into voltmx.sdk.serviceDoc");
 	var appId = "";
@@ -8882,7 +8453,7 @@ voltmx.net.loadClientCertificate = function(certParams) {
     }
 
     var cert = "cert";
-    if (voltmx.type(certParams[cert]) === "voltmx.types.RawBytes") {
+    if (voltmx.type(certParams[cert]) === "kony.types.RawBytes") {
         var rawBytes = certParams[cert];
         var base64 = voltmx.convertToBase64(rawBytes);
         certParams[cert] = base64;
@@ -9654,8 +9225,8 @@ voltmx.sdk.binary.validateUploadParams = function (uploadParams) {
     }
 
     // check for datatype of rawBytes
-    if (!voltmx.sdk.isNullOrUndefined(uploadParams[voltmx.sdk.constants.RAW_BYTES]) && voltmx.sdk.util.type(uploadParams[voltmx.sdk.constants.RAW_BYTES]) !== "voltmx.types.RawBytes") {
-        voltmx.sdk.logsdk.error("### voltmx.sdk.binary.validateUploadParams :: Error: rawBytes : expected voltmx.types.RawBytes object and found " + voltmx.sdk.util.type(uploadParams[voltmx.sdk.constants.RAW_BYTES]));
+    if (!voltmx.sdk.isNullOrUndefined(uploadParams[voltmx.sdk.constants.RAW_BYTES]) && voltmx.sdk.util.type(uploadParams[voltmx.sdk.constants.RAW_BYTES]) !== "kony.types.RawBytes") {
+        voltmx.sdk.logsdk.error("### voltmx.sdk.binary.validateUploadParams :: Error: rawBytes : expected kony.types.RawBytes object and found " + voltmx.sdk.util.type(uploadParams[voltmx.sdk.constants.RAW_BYTES]));
         return voltmx.sdk.error.getClientErrObj(voltmx.sdk.errorcodes.invalid_params_instance,
             "Invalid datatype of rawBytes " + voltmx.sdk.util.type(uploadParams[voltmx.sdk.constants.RAW_BYTES]) + " " +
             voltmx.sdk.errormessages.invalid_params_instance);
@@ -10419,7 +9990,7 @@ voltmx.net.loadClientCertificate = function(certParams) {
     }
 
     var cert = "cert";
-    if(voltmx.type(certParams[cert]) === "voltmx.types.RawBytes") {
+    if(voltmx.type(certParams[cert]) === "kony.types.RawBytes") {
         var rawBytes = certParams[cert];
         var base64 = voltmx.convertToBase64(rawBytes);
         certParams[cert] = base64;
@@ -11043,16 +10614,8 @@ voltmx.logger.createNewLogger = function(loggerName, loggerConfig) {
     //Exposed object and it's methods
     var loggerObj = voltmx.logger.createLoggerObject(loggerName, loggerConfig);
     if (loggerObj.config !== null && loggerObj.config.overrideConfig === true){
-        for (var key in voltmx.logger.logLevel) {
-            if (voltmx.logger.logLevel.hasOwnProperty(key)) {
-                if (voltmx.logger.logLevel[key].value == loggerObj.config.logFilterConfig.logLevel) {
-                    voltmx.logger.currentLogLevel = voltmx.logger.logLevel[key];
-                    break;
-                }
-            }
-        }
+        voltmx.logger.currentLogLevel = loggerObj.config.logFilterConfig.logLevel;
     }
-
     var seperator = " ";
 
     //#ifdef KONYLOGGER_IOS
@@ -11089,6 +10652,7 @@ voltmx.logger.createNewLogger = function(loggerName, loggerConfig) {
     return loggerObj;
 }
 voltmx.logger["appLogger"] = voltmx.logger.appLoggerInitialisation();
+
 /**
  * MFSDK
  * Created by KH2204.
@@ -12453,6 +12017,27 @@ function MessagingService(voltmxRef) {
 
 	this.manageGeoBoundariesCallback = function(data){
 
+	//#endif
+	    //#ifdef PLATFORM_NATIVE_ANDROID
+        if(data.state.toLocaleUpperCase() === voltmx.sdk.constants.ERROR_STRING){
+            voltmx.sdk.logsdk.error("MessagingService::manageGeoBoundariesCallback: error while creating geofences: " + JSON.stringify(data));
+            voltmx.sdk.verifyAndCallClosure(VMXMessagingService.refreshBoundariesFailureCallback, data);
+            return;
+        }
+
+        if(data.state.toLocaleUpperCase() === voltmx.sdk.constants.SUCCESS_STRING){
+            voltmx.sdk.logsdk.info("MessagingService::manageGeoBoundariesCallback: Successfully created geoFences:" + JSON.stringify(data));
+            if(!voltmx.sdk.isNullOrUndefined(VMXMessagingService.geoBoundariesResponse)
+                && !voltmx.sdk.isNullOrUndefined(VMXMessagingService.refreshBoundariesSuccessCallback)
+                && typeof(VMXMessagingService.refreshBoundariesSuccessCallback) == voltmx.sdk.constants.FUNCTION_STRING) {
+                voltmx.sdk.verifyAndCallClosure(VMXMessagingService.refreshBoundariesSuccessCallback, VMXMessagingService.geoBoundariesResponse);
+                VMXMessagingService.geoBoundariesResponse = null;
+                VMXMessagingService.refreshBoundariesSuccessCallback = null;
+            }
+            return;
+        }
+        //#endif
+    //#ifdef PLATFORM_NATIVE_ANDROID_IOS_WINDOWS
         var geoBoundariesOptions = VMXMessagingService.getGeoBoundariesOptions();
         if(data.state.toLocaleUpperCase() === "ENTRY" || data.state.toLocaleUpperCase() === "ENTER"){
             if(data.geofenceID !== "refreshBoundary"){
@@ -12604,7 +12189,14 @@ function MessagingService(voltmxRef) {
                     );
                 }
                 voltmx.location.createGeofences(geoBoundaries);
+                //#endif
+                //#ifdef PLATFORM_NATIVE_ANDROID
+                currentObject.geoBoundariesResponse = res;
+                //#endif
+                //#ifdef PLATFORM_NATIVE_IOS_WINDOWS
                 voltmx.sdk.verifyAndCallClosure(successCallback, res);
+                //#endif
+                //#ifdef PLATFORM_NATIVE_ANDROID_IOS_WINDOWS
 			},function(err){
 				voltmx.sdk.logsdk.perf("Executing finished getAndRefreshBoundaries with network failure");
                 voltmx.sdk.logsdk.error("MessagingService::getAndRefreshBoundaries failed to get geoBoundaries from KMS");
@@ -12656,8 +12248,20 @@ function MessagingService(voltmxRef) {
         }else{
             currentObject.refreshBoundariesFailureCallback = failureCallback;
         }
+        //#endif
+        //#ifdef PLATFORM_NATIVE_ANDROID
+        if(!typeof (successCallback) == voltmx.sdk.constants.FUNCTION_STRING){
+            voltmx.sdk.logsdk.perf("Executing finished registerGeoBoundaries with an exception");
+            throw new Exception(voltmx.sdk.errorConstants.MESSAGING_FAILURE, "successCallback is not provided");
+        }else{
+            currentObject.refreshBoundariesSuccessCallback = successCallback;
+        }
 
-        voltmx.sdk.logsdk.perf("Executing getCurrentPosition");
+        currentObject.geoBoundariesResponse = null;
+        //#endif
+        //#ifdef PLATFORM_NATIVE_ANDROID_IOS_WINDOWS
+
+		voltmx.sdk.logsdk.perf("Executing getCurrentPosition");
         voltmx.location.getCurrentPosition(
         	function(res){
 				voltmx.sdk.logsdk.perf("Executing finished getCurrentPosition's success");
@@ -12719,27 +12323,20 @@ function MessagingService(voltmxRef) {
 			},function(err){
                 voltmx.sdk.logsdk.perf("Executing finished getCurrentPosition's failure");
                 voltmx.sdk.logsdk.perf("Executing finished registerGeoBoundaries with an exception");
-				if(err.code === 1) {
+				if(err.code == 1){
                     throw new Exception(voltmx.sdk.errorConstants.MESSAGING_FAILURE, "Permission to access location is not enabled");
-				} else if(err.code === 2) {
+				}else if(err.code == 2){
 					throw new Exception(voltmx.sdk.errorConstants.MESSAGING_FAILURE, "Enable location and try again");
-				} else if(err.code === 3) {
+				}else if(err.code == 3){
                     voltmx.sdk.logsdk.error("MessagingService::registerGeoBoundaries Unable to retrieve current location.");
 					voltmx.sdk.verifyAndCallClosure(failureCallback, voltmx.sdk.error.getMessagingError("Unable to retrieve current location"));
-				} else if(err.code === 5) {
-                    throw new Exception(voltmx.sdk.errorConstants.MESSAGING_FAILURE, "Permission to access location in background is denied.");
-                } else if(err.code === 6) {
-                    throw new Exception(voltmx.sdk.errorConstants.MESSAGING_FAILURE, "Permission to access location is denied with Don't Ask Again.");
-                }
-			}, {
-                requireBackgroundAccess : true
-            }
+				}
+			}
 		);
 	}
 
     //#endif
 }
-
 /**
  * Method to create the Metrics service instance with the provided service name.
  * @returns {MetricsService} Metrics service instance
@@ -16466,16 +16063,8 @@ function voltmxSdkSyncService(voltmxRef) {
 
 
 function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options, isMFVersionCompatible) {
-    if(options[voltmx.sdk.constants.IS_ENABLE_IDENTITY_PKCE] === true) {
-        voltmx.sdk.pkceUtilityInstance = voltmx.sdk.util.getUtilityForPKCE();
-        if(!voltmx.sdk.pkceUtilityInstance.initializePKCEObject()) {
-            var err = voltmx.sdk.error.getErrObj(voltmx.sdk.errorcodes.pkce_params_generation_failed,
-                voltmx.sdk.errormessages.pkce_params_generation_failed);
-            var isErr = true;
-            callback(null, null, null, isErr, err);
-            return;
-        }
-    }
+    var utilityInstancePKCE = voltmx.sdk.util.getUtilityForPKCE();
+    utilityInstancePKCE.initializePKCEObject();
     var urlType = "/" + type + "/";
     var isSuccess = true;
     var isLogout = false;
@@ -16490,8 +16079,8 @@ function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options,
         slo = options["slo"];
     }
     var customQueryParamsForOAuth;
-    if(options && options.hasOwnProperty(voltmx.sdk.constants.CUSTOM_QUERY_PARAMS_FOR_OAUTH)){
-        customQueryParamsForOAuth = voltmx.sdk.util.objectToQueryParams(options[voltmx.sdk.constants.CUSTOM_QUERY_PARAMS_FOR_OAUTH]);
+    if(options && options.hasOwnProperty("customQueryParamsForOAuth")){
+        customQueryParamsForOAuth = voltmx.sdk.util.objectToQueryParams(options["customQueryParamsForOAuth"]);
     }
     var requestUrl;
 
@@ -16521,14 +16110,6 @@ function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options,
 		var _window = window;
 		var _popup = null;
 		var _listener = function (event) {
-		    var eventOrigin = event.origin;
-		    //checking whether the message(event) gets posted from the same origin as service url. This avoids handling of irrelevant
-            //message. Without this check, any message with valid string content posted on window was getting processed. But, we
-            //need to process the message posted from service url origin only
-		    if(!voltmx.sdk.util.isValidString(eventOrigin) || (serviceUrl.toLowerCase().indexOf(eventOrigin.toLowerCase()) < 0)) {
-		        return;
-		    }
-
 			var _contents = event.data;
             /**
              MFSDK-3431 - Recieving post message event from other endpoints.
@@ -16547,9 +16128,7 @@ function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options,
                     var bodyParams = {
                         code: _contents
                     };
-                    if(!voltmx.sdk.isNullOrUndefined(voltmx.sdk.pkceUtilityInstance)) {
-                        bodyParams = voltmx.sdk.pkceUtilityInstance.appendAppVerifierInBodyParams(bodyParams);
-                    }
+                    bodyParams = utilityInstancePKCE.appendCodeVerifierInBodyParams(bodyParams);
                         callback(urlType + "token", bodyParams, headers);
                 } catch (err) {
                     voltmx.sdk.logsdk.error("exception ::" + err);
@@ -16610,109 +16189,19 @@ function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options,
                 voltmx.sdk.util.isJsonObject(options) && options.hasOwnProperty(voltmx.sdk.constants.IE11_CROSS_DOMAIN_OAUTH_BASE_URL)) {
                 requestUrl = constructURLIE11(stripTrailingCharacter(options[voltmx.sdk.constants.IE11_CROSS_DOMAIN_OAUTH_BASE_URL], "/"), requestUrl);
             }
-            if(!voltmx.sdk.isNullOrUndefined(voltmx.sdk.pkceUtilityInstance)) {
-                requestUrl = voltmx.sdk.pkceUtilityInstance.appendAppChallengeOnURL(requestUrl);
-            }
+            requestUrl = utilityInstancePKCE.appendCodeChallengeOnURL(requestUrl);
         }
-        if (voltmx.sdk.getPlatformName() === voltmx.sdk.constants.PLATFORM_THIN_CLIENT
-            && options[voltmx.sdk.constants.NO_POP_UP] === true) {
-            //we will not override success url value given by user
-            if (requestUrl.indexOf(voltmx.sdk.constants.OAUTH_REDIRECT_SUCCESS_URL) === -1) {
-                requestUrl = requestUrl + "&" + voltmx.sdk.constants.OAUTH_REDIRECT_SUCCESS_URL + "=" + voltmx.application.getBrowserProtocol() + "//" + voltmx.application.getBaseURL();
-            }
-            var loginHelperFunction = callback;
-            var isError = false;
-
-            var codeVerifierBodyParamsJSON = {};
-            var metaDataManagerForLoginInSameWindow = options[voltmx.sdk.constants.METADATA_MANAGER_FOR_LOGIN_IN_SAME_WINDOW_OBJECT];
-
-            if(voltmx.sdk.util.isPlatformPlainJS()) {
-                if(!voltmx.sdk.isNullOrUndefined(appConfig)) {
-                    metaDataManagerForLoginInSameWindow.setItem(voltmx.sdk.constants.KEY_APPCONFIG_FOR_SINGLE_WINDOW_LOGIN, JSON.stringify(appConfig));
-                } else {
-                    voltmx.sdk.logsdk.error("Appconfig is null or undefined.");
-                    var errorObject = voltmx.sdk.error.getSingleWindowLoginErrObj(voltmx.sdk.errorcodes.invalid_appconfig,
-                        voltmx.sdk.errormessages.invalid_appconfig);
-                    isError = true;
-                    metaDataManagerForLoginInSameWindow.destroy();
-                    loginHelperFunction(null, null, null, isError, errorObject);
-                    return;
-                }
-            }
-            metaDataManagerForLoginInSameWindow.setItem(voltmx.sdk.constants.ENABLE_IDENTITY_PKCE, options[voltmx.sdk.constants.IS_ENABLE_IDENTITY_PKCE]);
-            if(!voltmx.sdk.isNullOrUndefined(voltmx.sdk.pkceUtilityInstance)) {
-                codeVerifierBodyParamsJSON = voltmx.sdk.pkceUtilityInstance.appendAppVerifierInBodyParams(codeVerifierBodyParamsJSON);
-                metaDataManagerForLoginInSameWindow.saveAppVerifier(codeVerifierBodyParamsJSON,
-                    saveAppVerifierSuccessCallback,
-                    function (errorObject) {
-                        voltmx.sdk.logsdk.error("Failed to save app_verifier at middleware.");
-                        isError = true;
-                        metaDataManagerForLoginInSameWindow.destroy();
-                        loginHelperFunction(null, null, null, isError, errorObject);
-                    });
-            } else {
-                saveAppVerifierSuccessCallback();
-            }
-
-            function saveAppVerifierSuccessCallback() {
-                if(!voltmx.sdk.isNullOrUndefined(voltmx.sdk.pkceUtilityInstance)) {
-                    voltmx.sdk.logsdk.info("app_verifier was saved at middleware");
-                }
-                metaDataManagerForLoginInSameWindow.saveMetaData();
-                voltmx.sdk.logsdk.info("login metadata for no popup login was saved");
-
-                var userCustomDataSaveHandle = options[voltmx.sdk.constants.CUSTOM_DATA_SAVE_HANDLE];
-                if (voltmx.sdk.isNullOrUndefined(userCustomDataSaveHandle)) {
-                    //user does not want to store data before app loose context
-                    voltmx.sdk.logsdk.info("user has not provided" + voltmx.sdk.constants.CUSTOM_DATA_SAVE_HANDLE +
-                        ", we will proceed directly to auth");
-                    _openWindowInSelfMode();
-                } else {
-                    if (typeof (userCustomDataSaveHandle) !== 'function') {
-                        voltmx.sdk.logsdk.error("user has provided" + voltmx.sdk.constants.CUSTOM_DATA_SAVE_HANDLE +
-                            " but argument type is not a function");
-                        var errorObject = voltmx.sdk.error.getSingleWindowLoginErrObj(voltmx.sdk.errorcodes.invalid_custom_data_save_handle,
-                            voltmx.sdk.errormessages.invalid_custom_data_save_handle);
-                        isError = true;
-                        metaDataManagerForLoginInSameWindow.destroy();
-                        loginHelperFunction(null, null, null, isError, errorObject);
-                        return;
-                    }
-
-                    voltmx.sdk.logsdk.info("calling user's " + voltmx.sdk.constants.CUSTOM_DATA_SAVE_HANDLE);
-                    userCustomDataSaveHandle(_openWindowInSelfMode, function (err) {
-                        voltmx.sdk.logsdk.error("Error occurred while performing customDataSaveHandle.");
-                        var errorObject = voltmx.sdk.error.getSingleWindowLoginErrObj(voltmx.sdk.errorcodes.custom_data_save_handle_failed,
-                            voltmx.sdk.errormessages.custom_data_save_handle_failed);
-                        isError = true;
-                        metaDataManagerForLoginInSameWindow.destroy();
-                        loginHelperFunction(null, null, null, isError, errorObject);
-                        return;
-                    })
-                }
-
-                function _openWindowInSelfMode() {
-                    var config = {};
-                    config[voltmx.sdk.constants.KEY_URL] = requestUrl;
-                    config[voltmx.sdk.constants.KEY_IS_SAME_WINDOW] = true;
-                    voltmx.application.openURLAsync(config);
-                }
-            }
+        if(voltmx.os.deviceInfo().name === voltmx.sdk.constants.PLATFORM_SPA
+            && !voltmx.sdk.util.isMobileDevice()
+            && voltmx.sdk.util.isPWAStandaloneOrFullscreen()) {
+            _popup = voltmx.sdk.util.openPopupWindow(requestUrl, "");
         } else {
-            if (voltmx.os.deviceInfo().name === voltmx.sdk.constants.PLATFORM_SPA
-                && !voltmx.sdk.util.isMobileDevice()
-                && voltmx.sdk.util.isPWAStandaloneOrFullscreen()) {
-                _popup = voltmx.sdk.util.openPopupWindow(requestUrl, "");
-            } else {
-                _popup = _window.open(requestUrl);
-            }
+            _popup = _window.open(requestUrl);
         }
 	}
 	else {
 		var browserSF = null;
 		var userDefined = false;
-        var userDefinedBrowserOnSuccess = null;
-        var userDefinedBrowserOnFailure = null;
         var userDefinedBrowserEvent = null;
         if(voltmx.sdk.util.hasBrowserWidget(options)){
             browserSF = options[voltmx.sdk.constants.BROWSER_WIDGET];
@@ -16789,29 +16278,22 @@ function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options,
 		}
 
 		if (isLogout) {
-            userDefinedBrowserOnSuccess = browserSF.onSuccess;
-            userDefinedBrowserOnFailure = browserSF.onFailure;
 			browserSF.onSuccess = handleOAuthLogoutSuccessCallback;
 			browserSF.onFailure = handleOAuthLogoutFailureCallback;
         } else {
             if (options && options["success_url"] && isMFVersionCompatible)
                 requestUrl += "&success_url="+options["success_url"];
 
-            if(!voltmx.sdk.isNullOrUndefined(voltmx.sdk.pkceUtilityInstance)) {
-                requestUrl = voltmx.sdk.pkceUtilityInstance.appendAppChallengeOnURL(requestUrl);
-            }
+            requestUrl = utilityInstancePKCE.appendCodeChallengeOnURL(requestUrl);
 			if (options && options["UseDeviceBrowser"] && isMFVersionCompatible) {
 				voltmx.application.openURL(requestUrl);
 				return;
             } else {
                 isLoginCallbackInvoked = false;
-                //#ifdef PLATFORM_NATIVE_ANDROID
-                verifyAndStoreDefinedBrowserEvent(browserSF.onPageStarted);
-                browserSF.onPageStarted = handleRequestCallback;
-                //#else
+
                 verifyAndStoreDefinedBrowserEvent(browserSF.handleRequest);
                 browserSF.handleRequest = handleRequestCallback;
-                //#endif
+
                 requestUrl = appendCustomOAuthParamsToURL(requestUrl);
 			}
 		}
@@ -16824,13 +16306,8 @@ function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options,
         }
         browserSF.requestURLConfig = urlConf;
 
-        function resetBrowserOnSuccessandFailureEvents(browser) {
-            //Resetting the overridden onSuccess and onFailure callbacks to user defined callbacks
-            browser.onSuccess = userDefinedBrowserOnSuccess;
-            browser.onFailure = userDefinedBrowserOnFailure;
-        }
 
-        function handleOAuthLogoutSuccessCallback(browser){
+        function handleOAuthLogoutSuccessCallback(){
 			if(!userDefined) {
 				var prevFormPostShow = prevForm.postShow;
 				function postShowOverride() {
@@ -16846,21 +16323,11 @@ function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options,
 			}
 			voltmx.sdk.isOAuthLogoutInProgress = false;
 			callback(isSuccess);
-
-            //Invoking user defined onSuccess event of browser widget
-            if (!voltmx.sdk.isNullOrUndefined(userDefinedBrowserOnSuccess))
-                voltmx.sdk.verifyAndCallClosure(userDefinedBrowserOnSuccess, browser);
-            resetBrowserOnSuccessandFailureEvents(browser);
 		}
 
-		function handleOAuthLogoutFailureCallback(browser){
+		function handleOAuthLogoutFailureCallback(){
             voltmx.sdk.isOAuthLogoutInProgress = false;
 			isSuccess = false;
-
-            //Invoking user defined onFailure event of browser widget
-            if (!voltmx.sdk.isNullOrUndefined(userDefinedBrowserOnFailure))
-                voltmx.sdk.verifyAndCallClosure(userDefinedBrowserOnFailure, browser);
-            resetBrowserOnSuccessandFailureEvents(browser);
 		}
 
 		function displayPrevForm(){
@@ -16888,26 +16355,11 @@ function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options,
             }
         }
 
-        function resetOAuthLoginUserDefinedBrowserEvent(browserWidget) {
-            //Resetting the overridden onPageStarted/handleRequest callbacks to user defined callback after invoking /token call.
-            //If not reset, when the user does login next time using same browser widget, overridden SDK's handleRequestCallback
-            //is considered as user defined callback on these events. This ends up calling handleRequestCallback again.
-            //#ifdef PLATFORM_NATIVE_ANDROID
-            browserWidget.onPageStarted = userDefinedBrowserEvent;
-            //#else
-            browserWidget.handleRequest = userDefinedBrowserEvent;
-            //#endif
-        }
-
 		function handleRequestCallback(browserWidget, params) {
 
 			var originalUrl = params["originalURL"];
-            if (originalUrl.toLowerCase().indexOf(serviceUrl.toLowerCase()) >= 0) {
-                if (!isLoginCallbackInvoked && !voltmx.sdk.isNullOrUndefined(params.queryParams) && !voltmx.sdk.isNullOrUndefined(params.queryParams.code)) {
-                    if(!voltmx.sdk.isNullOrUndefined(voltmx.sdk.pkceUtilityInstance) && voltmx.sdk.isNullOrUndefined(params.queryParams.oauth_session_id)) {
-                        verifyAndCallUserDefinedBrowserEvent(browserWidget, params);
-                        return false;
-                    }
+            if (originalUrl.indexOf(serviceUrl) >= 0) {
+                if (!isLoginCallbackInvoked && typeof (params.queryParams) !== "undefined" && typeof (params.queryParams.code) !== "undefined") {
                     if (!userDefined) {
                         displayPrevForm();
                     }
@@ -16921,13 +16373,7 @@ function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options,
                         voltmx.timer.schedule(new Date().getTime().toString(), function (url, callback, code, headers) {
                             return function () {
                                 var bodyParams = {code: code};
-                                if(!voltmx.sdk.isNullOrUndefined(voltmx.sdk.pkceUtilityInstance)) {
-                                    bodyParams = voltmx.sdk.pkceUtilityInstance.appendAppVerifierInBodyParams(bodyParams);
-                                }
-                                if(!(voltmx.sdk.isNullOrUndefined(voltmx.sdk.pkceUtilityInstance) ||
-                                     voltmx.sdk.isNullOrUndefined(params.queryParams.oauth_session_id))) {
-                                    bodyParams.oauth_session_id = params.queryParams.oauth_session_id;
-                                }
+                                bodyParams = utilityInstancePKCE.appendCodeVerifierInBodyParams(bodyParams);
                                 callback(url, bodyParams, headers);
                             };
                         }(urlType + "token", callback, decodeURIComponent(params.queryParams.code), headers), 1, false);
@@ -16942,9 +16388,6 @@ function OAuthHandler(serviceUrl, providerName, appkey, callback, type, options,
                 }
             }
             verifyAndCallUserDefinedBrowserEvent(browserWidget, params);
-            if(isLoginCallbackInvoked) {
-                resetOAuthLoginUserDefinedBrowserEvent(browserWidget);
-            }
 			return false;
 		}
 	}
@@ -16972,12 +16415,8 @@ function handleDeeplinkCallback(params){
         }
         // make request for tokens
         var bodyParams = {code: decodeURIComponent(params.launchparams.code)};
-        if(!voltmx.sdk.isNullOrUndefined(voltmx.sdk.pkceUtilityInstance)) {
-            bodyParams = voltmx.sdk.pkceUtilityInstance.appendAppVerifierInBodyParams(bodyParams);
-        }
-        if(!voltmx.sdk.isNullOrUndefined(params.launchparams.oauth_session_id)) {
-            bodyParams.oauth_session_id = params.launchparams.oauth_session_id;
-        }
+        var utilityInstancePKCE = voltmx.sdk.util.getUtilityForPKCE();
+        bodyParams = utilityInstancePKCE.appendCodeVerifierInBodyParams(bodyParams);
         voltmx.sdk.util.OAuthCallback(requestUrl, bodyParams , headers);
     }
 }
@@ -17451,15 +16890,15 @@ voltmx.setupsdks = function (initConfig, successCallBack, errorCallBack) {
                         try {
                             dsAppServiceDoc = JSON.parse(decryptedSvcDoc);
                         } catch (err) {
-                            voltmx.sdk.logsdk.debug("Failed to parse the service doc : ", err.toString());
+                            voltmx.sdk.logsdk.debug("Failed to retrieve config data form Cache : ", err.toString());
                             return null;
                         }
                     } else {
-                        voltmx.sdk.logsdk.debug("Failed to decrypt cached service doc");
+                        voltmx.sdk.logsdk.debug("Failed to retrieve config data form Cache");
                         return null;
                     }
                 } else {
-                    voltmx.sdk.logsdk.debug("Failed to retrieve service doc form Cache");
+                    voltmx.sdk.logsdk.debug("Failed to retrieve config data form Cache : ", err.toString());
                     return null;
                 }
             } else {
@@ -17572,7 +17011,7 @@ voltmx.setupsdks = function (initConfig, successCallBack, errorCallBack) {
         // Checking for same Foundry app and version
         if ((cachedMfAppMetaData.appKey === initConfig.appKey)
             && (cachedMfAppMetaData.appSecret === initConfig.appSecret)
-            && validateServiceUrls()
+            && (cachedMfAppMetaData.serviceUrl === initConfig.serviceUrl)
             && (Math.abs(parseFloat(appConfig.svcDoc.app_version) - parseFloat(cachedSvcDoc.app_version)) < 1e-9)) {
 
             var toolsBundledSvcDocEtagDateTime = new Date(parseInt(initConfig.appConfig.svcDoc.service_doc_etag, 16)).getTime();
@@ -17590,35 +17029,6 @@ voltmx.setupsdks = function (initConfig, successCallBack, errorCallBack) {
         }
     }
 
-    //To validate both the service urls from cache and startup.js.
-    function validateServiceUrls(){
-        if(getBaseUrl(cachedMfAppMetaData.serviceUrl).toLowerCase() !== getBaseUrl(initConfig.serviceUrl).toLowerCase()){
-            return false;
-        }
-        if(getPathFromUrl(cachedMfAppMetaData.serviceUrl) !== getPathFromUrl(initConfig.serviceUrl)){
-            return false;
-        }
-        return true;
-    }
-
-    // To fetch base url from service url
-    function getBaseUrl(serviceUrl){
-        var index = serviceUrl.indexOf("//");
-        var baseUrl = "";
-        // adding +2 to avoid double slash in the service url to get serviceUrl without hostname
-        index = index + 2;
-        var serviceUrlWithOutHostName = serviceUrl.substring(index);
-        //fetching the baseurl substring from serviceUrl
-        baseUrl = serviceUrl.substring(0, (serviceUrlWithOutHostName.indexOf("/")) + index);
-        return baseUrl;
-    }
-
-    // To fetch remaining path from service url
-    function getPathFromUrl(serviceUrl){
-        var remainingPath = serviceUrl.split(getBaseUrl(serviceUrl));
-        return remainingPath[1];
-    }
-
     // Initialize VMXFoundry Object
     if (VMXFoundry === null) {
         KNYMobileFabric = VMXFoundry = initializeVMXFoundryObject(initConfig.appConfig.appId, initConfig.appConfig.appName, initConfig.appConfig.appVersion);
@@ -17631,18 +17041,19 @@ voltmx.setupsdks = function (initConfig, successCallBack, errorCallBack) {
         }
     }
 
+    if (voltmx.sdk.isLicenseUrlAvailable && voltmx.license && voltmx.license.createSession) {
+        voltmx.license.createSession();
+    }
+
     try {
         // Pass the appkey, appSecret, SvcDoc to initWithServiceDoc
         VMXFoundry.initWithServiceDoc(acceptedMfAppMetaData.appKey, acceptedMfAppMetaData.appSecret, acceptedSvcDoc);
         // set eventtypes for APM
-        KNYMetricsService = VMXMetricsService = initializeMetricsForAPM(KNYMobileFabric, initConfig.eventTypes);
-        if (voltmx.sdk.getPlatformName() !== voltmx.sdk.constants.PLATFORM_THIN_CLIENT) {
-            //Call anonymous login to avoid delay in first call invocation
-            // or to avoid timing issues in case of parallel service calls at application startup.
-            // This is an asynchronous call, and it is  good to have at this place. Can be removed if we see delays in App launch
-            callAnonymousLoginIfRequired(VMXFoundry);
-        }
-
+        KNYMetricsService = VMXMetricsService = initializeMetricsForAPM(VMXFoundry, initConfig.eventTypes);
+        //Call anonymous login to avoid delay in first call invocation
+        // or to avoid timing issues in case of parallel service calls at application startup.
+        // This is an asynchronous call, and it is  good to have at this place. Can be removed if we see delays in App launch
+        callAnonymousLoginIfRequired(VMXFoundry);
         // call successcallback if exists
         voltmx.sdk.verifyAndCallClosure(successCallBack, VMXFoundry);
     } catch (error) {
@@ -17821,19 +17232,7 @@ voltmx.invokeEASMetaServiceWithLiteInit = function (appCredentials, versionCheck
             version = serviceObj["version"];
         }
         if (!voltmx.sdk.isNullOrUndefined(odataqueryStr)) {
-            if(odataqueryStr.charAt(0)==='$'){
-                odataqueryStr=odataqueryStr.substring(1);
-            }
-            var odatastr="";
-            var odataList=odataqueryStr.split(/&\$(?=(?:(?:[^']*'){2})*[^']*$)/g);
-            for (var list of odataList){
-                var olist=list.split(/=(?=(?:(?:[^']*'){2})*[^']*$)/g)
-                odatastr=odatastr+"&$"+olist[0]+"="+encodeURIComponent(olist[1]);
-            }
-            if(odatastr.charAt(0)==='&'){
-                odatastr=odatastr.substring(1);
-            }
-            url = url + "?" + odatastr;
+            url = url + "?" + encodeURI(odataqueryStr);
             if (!voltmx.sdk.isNullOrUndefined(queryParams)) {
                 url = url + "&" + voltmx.sdk.util.objectToQueryParams(queryParams);
             }
@@ -18133,8 +17532,8 @@ function voltmxNetHttpRequest(url, params, headers, httpMethod, voltmxContentTyp
 
             //If response headers has X-Voltmx-Passthrough, ignoring parsing the response content. With this, passthrough flag
             //is optional for passthrough services and will be deprecated in future releases
-            if(responseHeaders && (responseHeaders.hasOwnProperty(voltmx.sdk.constants.PASSTHROUGH_RESPONSE_HEADER.toLowerCase())
-                                || responseHeaders.hasOwnProperty(voltmx.sdk.constants.PASSTHROUGH_RESPONSE_HEADER)) && (voltmx.sdk.convertPassthroughResponseToJson !== true)) {
+            if(responseHeaders && responseHeaders.hasOwnProperty(voltmx.sdk.constants.PASSTHROUGH_RESPONSE_HEADER)
+                                                                        && (voltmx.sdk.convertPassthroughResponseToJson !== true)) {
                 response.rawResponse = result.response;
             } else if (options && options[voltmx.sdk.constants.PASSTHROUGH] && voltmx.sdk.convertPassthroughResponseToJson !== true) {
                 //If option "passthrough" is enabled then SDK will not parse the result from backend.
@@ -18175,8 +17574,7 @@ function voltmxNetHttpRequest(url, params, headers, httpMethod, voltmxContentTyp
                     response.opstatus = 0;
                 }
                 if (response.opstatus == 0 || (response.opstatus >= 500100 && response.opstatus <= 500200)) {
-                    if(responseHeaders && (responseHeaders.hasOwnProperty(voltmx.sdk.constants.PASSTHROUGH_RESPONSE_HEADER.toLowerCase())
-                                        || responseHeaders.hasOwnProperty(voltmx.sdk.constants.PASSTHROUGH_RESPONSE_HEADER))) {
+                    if(responseHeaders && responseHeaders.hasOwnProperty(voltmx.sdk.constants.PASSTHROUGH_RESPONSE_HEADER)) {
                         validateIntegrityAndHandleCallbackInvocation(response);
                     } else if(options && (options[voltmx.sdk.constants.DISABLE_INTEGRITY] || options[voltmx.sdk.constants.PASSTHROUGH]
                                           || options[voltmx.sdk.constants.IGNORE_MESSAGE_INTEGRITY])){
@@ -18513,41 +17911,6 @@ function voltmxDataStore() {
         }
         return items;
     }
-
-    /**
-     * This method first encrypt the value and save encrypted value against the given key
-     * @param key
-     * @param value -can accept JSON(converts to string) or plain string only
-     */
-    this.setSecureItem = function (key, value) {
-        voltmx.sdk.logsdk.info("saving data after encryption of plain data");
-        if (voltmx.sdk.util.isJsonObject(value)) {
-            value = JSON.stringify(value);
-        }
-        var encryptionKey = [voltmx.sdk.util.getSharedClientId()];
-        var encryptionAlgorithm = voltmx.sdk.constants.ENCRYPTION_ALGO_AES;
-        var securedValue = voltmx.sdk.util.encryptText(value, encryptionKey, encryptionAlgorithm);
-        this.setItem(key, securedValue);
-    }
-
-    /**
-     * This method retrieves saved encrypted value and decrypt it into original value
-     * @param key
-     * @returns {*} can return JSON if value is parsed or string otherwise
-     */
-    this.getSecureItem = function (key) {
-        voltmx.sdk.logsdk.info("retrieving encrypted data as plain data");
-        var value = this.getItem(key);
-        var encryptionKey = [voltmx.sdk.util.getSharedClientId()];
-        var decryptionAlgorithm = voltmx.sdk.constants.ENCRYPTION_ALGO_AES;
-        var securedValue = voltmx.sdk.util.decryptText(value, encryptionKey, decryptionAlgorithm);
-        if (voltmx.sdk.isJson(securedValue)) {
-            securedValue = JSON.parse(securedValue);
-        }
-
-        return securedValue;
-    }
-
 }
 
 function parseHttpResponse(httpRequest){
@@ -18649,7 +18012,6 @@ voltmx.sdk.getPayload = function(voltmxRef) {
         }
     }
     payload.sessiontype = voltmx.sdk.util.getSessionType();
-    payload.clientUUID = voltmxRef.clientUUID;
 
     return payload;
 };
@@ -18705,14 +18067,6 @@ voltmx.sdk.getPlatformName = function () {
     //#endif
     return returnVal;
 };
-
-voltmx.sdk.util.isPlatformPlainJS = function() {
-    var isPlatformPlainJS = false;
-    //#ifdef PLATFORM_PLAIN_JS
-    isPlatformPlainJS = true;
-    //#endif
-    return isPlatformPlainJS;
-}
 
 voltmx.sdk.util.createSessionAndSendIST = function(){
     voltmx.license.createSession();
@@ -18871,6 +18225,7 @@ voltmx.sdk.util.saveMetadatainDs = function (appKey, appSecret, servConfig) {
     voltmx.sdk.dataStore.setItem(voltmx.sdk.util.prefixAppid(voltmx.sdk.constants.MOBILE_FABRIC_SERVICE_DOC), voltmx.sdk.util.encryptAppConfig(JSON.stringify(servConfig)));
     voltmx.sdk.dataStore.setItem(appConfig.appId, JSON.stringify(appId));
     voltmx.sdk.dataStore.setItem(voltmx.sdk.util.prefixAppid(voltmx.sdk.constants.ENCRYPTION_APPCONFIG_FLAG), true);
+
     voltmx.sdk.logsdk.info("### saveMetadatainDs:: metadata saved successfuly in dataStore");
 };
 
@@ -18986,22 +18341,17 @@ voltmx.sdk.util.decryptSSOToken = function (encryptedtoken) {
 /**
  * Generates key to encrypt/decrypt any text.
  * @param salt {Array}
- * @param keyStrength {Integer}
  * @returns string
  */
-voltmx.sdk.util.generateSecureKeyFromText = function (salt, keyStrength) {
+voltmx.sdk.util.generateSecureKeyFromText = function (salt) {
     var secureKey = "";
 
     if (!voltmx.sdk.isNullOrUndefined(salt) && voltmx.sdk.isArray(salt)) {
         var params = {};
         params["passphrasetext"] = salt;
         params["subalgo"] = voltmx.sdk.constants.ENCRYPTION_ALGO_AES;
-        if(voltmx.sdk.getPlatformName() === voltmx.sdk.constants.PLATFORM_IOS && keyStrength === voltmx.sdk.constants.AES_ALGO_KEY_STRENGTH_256) {
-            params[voltmx.sdk.constants.ENC_PASSPHRASE_HASH_ALGO] = voltmx.sdk.constants.HASH_FUNCTION_SHA2;
-        } else {
-            params[voltmx.sdk.constants.ENC_PASSPHRASE_HASH_ALGO] = voltmx.sdk.constants.HASH_FUNCTION_MD5;
-        }
-        secureKey = voltmx.crypto.newKey(voltmx.sdk.constants.ENC_TYPE_PASSPHRASE, keyStrength, params);
+        params["passphrasehashalgo"] = voltmx.sdk.constants.HASH_FUNCTION_MD5;
+        secureKey = voltmx.crypto.newKey(voltmx.sdk.constants.ENC_TYPE_PASSPHRASE, 128, params);
     }
     else {
         throw new Exception(voltmx.sdk.errorConstants.CONFIGURATION_FAILURE, "Invalid param. salt cannot be null, should be of type Array");
@@ -19019,10 +18369,7 @@ voltmx.sdk.util.generateSecureKeyFromText = function (salt, keyStrength) {
  */
 voltmx.sdk.util.encryptText = function (text, salt, encryptionAlgo) {
     try {
-        var encryptionKey = voltmx.sdk.util.generateSecureKeyFromText(salt, voltmx.sdk.constants.AES_ALGO_KEY_STRENGTH_256);
-        if(voltmx.sdk.isNullOrUndefined(encryptionKey)) {
-            encryptionKey = voltmx.sdk.util.generateSecureKeyFromText(salt, voltmx.sdk.constants.AES_ALGO_KEY_STRENGTH_128);
-        }
+        var encryptionKey = voltmx.sdk.util.generateSecureKeyFromText(salt);
         var encryptedText = voltmx.crypto.encrypt(encryptionAlgo, encryptionKey, text, {});
         if(voltmx.sdk.isNullOrUndefined(encryptedText) || encryptedText == "") {
             voltmx.sdk.util.recordCustomEvent("INVALID CRYPTO RESPONSE", "encryptedText: " + encryptedText, "encryptedText: null or EMPTY", "cipher", null);
@@ -19039,80 +18386,26 @@ voltmx.sdk.util.encryptText = function (text, salt, encryptionAlgo) {
 };
 
 /**
- * Decrypts text with given decryptionAlgo and decryptionKey
+ * Decrypts text with the given salt and encryptionAlgo.
  * @param text to be decrypted
- * @param salt additional input to a one-way function that "hashes" data in case of fallback
- * @param decryptionAlgo algo to be used to decrypt
- * @param decryptionKey key to be used to decrypt
+ * @param salt additional input to a one-way function that "hashes" data
+ * @param encryptionAlgo algo to be used to decrypt
  * @returns decrypted string
  */
-voltmx.sdk.util.performDecryption = function (text, salt, decryptionAlgo, decryptionKey) {
+voltmx.sdk.util.decryptText = function (text, salt, decryptionAlgo) {
     try {
+        var decryptionKey = voltmx.sdk.util.generateSecureKeyFromText(salt);
         // convert base64 to rawbytes
         var raw_text = voltmx.sdk.util.convertBase64ToRawBytes(text);
 
         var decryptText = voltmx.crypto.decrypt(decryptionAlgo, decryptionKey, raw_text, {});
         if(voltmx.sdk.isNullOrUndefined(decryptText) || decryptText == "") {
             voltmx.sdk.util.recordCustomEvent("INVALID CRYPTO RESPONSE", "get decryptText: " + text, "decryptText: null", "decipher", null);
-            if(isKeyStrength256ForDecryption) {
-                isKeyStrength256ForDecryption = false;
-                decryptText = voltmx.sdk.util.fallBackToAES128ForDecryption(text, salt, decryptionAlgo);
-            }
         }
         return decryptText;
     } catch (exception) {
         voltmx.sdk.logsdk.error("Exception occurred while converting to raw text, exception :", exception);
         voltmx.sdk.util.recordCustomEvent("INVALID CRYPTO RESPONSE", "get decryptText: " + text, "decryptText: exception", "decipher", null);
-    }
-};
-
-/**
- * Initiates text decryption with the given salt and encryptionAlgo 128 bit
- * Immediate encryption with 256 bit is initiated for cases where 256 bit is supported and are using 128 bit until now
- * @param text to be decrypted
- * @param salt additional input to a one-way function that "hashes" data
- * @param decryptionAlgo algo to be used to decrypt
- * @returns decrypted string
- */
-voltmx.sdk.util.fallBackToAES128ForDecryption = function(text, salt, decryptionAlgo) {
-    try {
-        var decryptionKey = voltmx.sdk.util.generateSecureKeyFromText(salt, voltmx.sdk.constants.AES_ALGO_KEY_STRENGTH_128);
-        var decryptText = voltmx.sdk.util.performDecryption(text, salt, decryptionAlgo, decryptionKey);
-        voltmx.sdk.util.encryptText(decryptText, salt, voltmx.sdk.constants.ENCRYPTION_ALGO_AES);
-
-        return decryptText;
-    } catch (exception) {
-        voltmx.sdk.logsdk.error("Exception occurred while decrypting text using AES 128, exception :", exception);
-    }
-};
-
-/**
- * Flag to maintain info on decryption key size
- * @type {boolean}
- */
-isKeyStrength256ForDecryption = true;
-
-/**
- * Initiates text decryption with the given salt and encryptionAlgo 256 bit and falls back to 128 bit in cases of 256 bit not being supported
- * @param text to be decrypted
- * @param salt additional input to a one-way function that "hashes" data
- * @param decryptionAlgo algo to be used to decrypt
- * @returns decrypted string
- */
-voltmx.sdk.util.decryptText = function (text, salt, decryptionAlgo) {
-    try {
-        var decryptedText = null;
-        var decryptionKey = voltmx.sdk.util.generateSecureKeyFromText(salt, voltmx.sdk.constants.AES_ALGO_KEY_STRENGTH_256);
-        if(!voltmx.sdk.isNullOrUndefined(decryptionKey)) {
-            isKeyStrength256ForDecryption = true;
-            decryptedText = voltmx.sdk.util.performDecryption(text, salt, decryptionAlgo, decryptionKey);
-        } else {
-            isKeyStrength256ForDecryption = false;
-            decryptedText = voltmx.sdk.util.fallBackToAES128ForDecryption(text, salt, decryptionAlgo);
-        }
-        return decryptedText;
-    } catch (exception) {
-        voltmx.sdk.logsdk.error("Exception occurred while decrypting text using AES 256, exception :", exception);
     }
 };
 
@@ -19133,17 +18426,12 @@ voltmx.sdk.util.convertBase64ToRawBytes = function (base64String) {
 
 /**
  * Returns type of object
- * framework api voltmx.type is not supported by Phonegap and plain-js platforms
+ * framework api kony.type is not supported by Phonegap and plain-js platforms
  * @return {*}
  */
 voltmx.sdk.util.type = function(objectVar){
     if(voltmx.sdk.getAType() === voltmx.sdk.constants.SDK_ATYPE_NATIVE) {
-        var type = voltmx.type(objectVar);
-        if (voltmx.sdk.getPlatformName() === voltmx.sdk.constants.PLATFORM_WINDOWS) {
-            type = type.replace("kony", "voltmx");
-        }
-        
-        return type;
+        return voltmx.type(objectVar)
     }else{
         return typeof(objectVar)
     }
@@ -19219,6 +18507,7 @@ voltmx.sdk.util.loadMetadataFromDs = function (dsAppMetaData, dsAppServiceDoc) {
 voltmx.sdk.util.getSharedClientId = function() {
     if(voltmx.sdk.isNullOrUndefined(voltmx.sdk.dataStore.getItem(voltmx.sdk.util.prefixAppid(voltmx.sdk.constants.SHARED_CLIENT_IDENTIFIER)))) {
         voltmx.sdk.dataStore.setItem(voltmx.sdk.util.prefixAppid(voltmx.sdk.constants.SHARED_CLIENT_IDENTIFIER), voltmx.license.generateUUID());
+        voltmx.sdk.dataStore.setItem(voltmx.sdk.util.prefixAppid(voltmx.sdk.constants.ENCRYPTION_APPCONFIG_FLAG), true);
         voltmx.sdk.util.recordCustomEvent("INVALID SHARED CLIENT_ID", "Generated new SharedClient ID", "SCID: NEW_VALUE", "decipher", null);
     }
     var sharedClientID = voltmx.sdk.dataStore.getItem(voltmx.sdk.util.prefixAppid(voltmx.sdk.constants.SHARED_CLIENT_IDENTIFIER));
@@ -19560,8 +18849,7 @@ voltmx.sdk.util.getRefreshLoginTokenStoreUtility = (function() {
                 for (var index = 0; index < providers.length; index++) {
                     provider = providers[index];
                     if (persistedProvidersList.indexOf(provider) != -1) {
-                        if (!voltmx.sdk.isNullOrUndefined(backendRefreshTokens[provider]) &&
-                            voltmxRef.refreshLoginProvidersSet.has(provider)) {
+                        if (!voltmx.sdk.isNullOrUndefined(backendRefreshTokens[provider])) {
                             persistedRefreshLoginProviderTokens[provider][voltmx.sdk.constants.BACKEND_REFRESH_TOKEN] = backendRefreshTokens[provider];
                         } else {
                             voltmx.sdk.logsdk.warn("backend refresh token for " + provider + " is null or undefined");
@@ -19592,14 +18880,14 @@ voltmx.sdk.util.getUtilityForPKCE = (function () {
     var utilityObject = null;
 
     /**
-     * Helper class containing methods for generating app verifier, app challenge,
+     * Helper class containing methods for generating code verifier, code challenge,
      * updating url & body params
      */
     function helperClassPKCE() {
         var secureParams = null;
 
         /**
-         * This method resets app verifier & app challenge to null
+         * This method resets code verifier & code challenge to null
          * @return void
          */
         this.resetPKCEObject = function () {
@@ -19609,35 +18897,33 @@ voltmx.sdk.util.getUtilityForPKCE = (function () {
 
         /**
          * This method resets runtime utility object's PKCE values
-         * and tries to generates app verifier & app challenge
+         * and tries to generates code verifier & code challenge
          * @return void
          */
-        this.initializePKCEObject = function (options) {
+        this.initializePKCEObject = function () {
             utilityObject.resetPKCEObject();
             try {
-                var app_verifier = voltmx.crypto.generateSecureRandom({
+                var code_verifier = voltmx.crypto.generateSecureRandom({
                     "size": 43, "type": "base64"
                 });
-                app_verifier = replaceUnwantedCharacters(app_verifier);
-                app_verifier = app_verifier.substring(0, 128);
+                code_verifier = replaceUnwantedCharacters(code_verifier);
+                code_verifier = code_verifier.substring(0, 128);
 
                 var base64table = {"returnBase64String": "true"};
-                var app_challenge = voltmx.crypto.createHash(voltmx.sdk.constants.HASHING_ALGORITHM, app_verifier, base64table);
-                app_challenge = replaceUnwantedCharacters(app_challenge);
+                var code_challenge = voltmx.crypto.createHash(voltmx.sdk.constants.HASHING_ALGORITHM, code_verifier, base64table);
+                code_challenge = replaceUnwantedCharacters(code_challenge);
 
-                if (!voltmx.sdk.isNullOrUndefined(app_verifier) && !voltmx.sdk.isNullOrUndefined(app_challenge)) {
+                if (!voltmx.sdk.isNullOrUndefined(code_verifier) && !voltmx.sdk.isNullOrUndefined(code_challenge)) {
                     voltmx.sdk.logsdk.debug("secure params generated");
                     secureParams = {};
-                    secureParams[voltmx.sdk.constants.APP_VERIFIER] = app_verifier;
-                    secureParams[voltmx.sdk.constants.APP_CHALLENGE] = app_challenge;
+                    secureParams[voltmx.sdk.constants.CODE_VERIFIER] = code_verifier;
+                    secureParams[voltmx.sdk.constants.CODE_CHALLENGE] = code_challenge;
                 } else {
                     voltmx.sdk.logsdk.error("secure params generated are null");
                 }
             } catch (e) {
                 voltmx.sdk.logsdk.error("could not generated secure params due to "+JSON.stringify(e));
-                return false;
             }
-            return true;
         };
 
         /**
@@ -19652,38 +18938,30 @@ voltmx.sdk.util.getUtilityForPKCE = (function () {
         }
 
         /**
-         * This method adds app_challenge & app_challenge_method as queryParams on url
+         * This method adds code_challenge & code_challenge_method as queryParams on url
          * @param {String} url to call for login
          * @return {String} url with added query params
          */
-        this.appendAppChallengeOnURL = function (url) {
+        this.appendCodeChallengeOnURL = function (url) {
             if (!voltmx.sdk.isNullOrUndefined(secureParams) && !voltmx.sdk.isNullOrUndefined(url)) {
-                url += "&" + voltmx.sdk.constants.APP_CHALLENGE + voltmx.sdk.constants.EQUAL_TO + secureParams[voltmx.sdk.constants.APP_CHALLENGE]
-                    + "&" + voltmx.sdk.constants.KEY_APP_CHALLENGE_METHOD + voltmx.sdk.constants.EQUAL_TO
-                    + voltmx.sdk.constants.APP_CHALLENGE_METHOD_VALUE;
-                if(voltmx.sdk.getPlatformName() === voltmx.sdk.constants.PLATFORM_THIN_CLIENT) {
-                    url += "&" + voltmx.sdk.constants.OAUTH_SESSION_RESPONSE_TYPE + voltmx.sdk.constants.EQUAL_TO
-                        + voltmx.sdk.constants.HEADER;
-                } else {
-                    url += "&" + voltmx.sdk.constants.OAUTH_SESSION_RESPONSE_TYPE + voltmx.sdk.constants.EQUAL_TO
-                        + voltmx.sdk.constants.QUERY;
-                }
-                //after we passed app_challenge, we should no longer keep values with us.
-                delete secureParams[voltmx.sdk.constants.APP_CHALLENGE];
+                url += "&" + voltmx.sdk.constants.CODE_CHALLENGE + "=" + secureParams[voltmx.sdk.constants.CODE_CHALLENGE]
+                    + "&" + voltmx.sdk.constants.KEY_CODE_CHALLENGE_METHOD + "=" + voltmx.sdk.constants.CODE_CHALLENGE_METHOD_VALUE;
+                //after we passed code_challenge, we should no longer keep values with us.
+                secureParams[voltmx.sdk.constants.CODE_CHALLENGE] = null;
             }
             return url;
         };
 
         /**
-         * This method adds app_verifier in bodyParams
+         * This method adds code_verifier in bodyParams
          * and destroys runtime utility object's PKCE values for cleanup and avoiding misuse
          * @param {JSON} bodyParams
-         * @return {JSON} bodyParams with added app_verifier
+         * @return {JSON} bodyParams with added code_verifier
          */
-        this.appendAppVerifierInBodyParams = function (bodyParams) {
+        this.appendCodeVerifierInBodyParams = function (bodyParams) {
             if (!voltmx.sdk.isNullOrUndefined(secureParams) && voltmx.sdk.util.isJsonObject(bodyParams)) {
-                bodyParams[voltmx.sdk.constants.APP_VERIFIER] = secureParams[voltmx.sdk.constants.APP_VERIFIER];
-                //after we passed app_verifier, last step of login activity will end & we should no longer keep values with us.
+                bodyParams[voltmx.sdk.constants.CODE_VERIFIER] = secureParams[voltmx.sdk.constants.CODE_VERIFIER];
+                //after we passed code_verifier, last step of login activity will end & we should no longer keep values with us.
                 utilityObject.resetPKCEObject();
             }
             return bodyParams;
@@ -19694,239 +18972,6 @@ voltmx.sdk.util.getUtilityForPKCE = (function () {
     return function () {
         if (voltmx.sdk.isNullOrUndefined(utilityObject)) {
             utilityObject = new helperClassPKCE();
-            Object.freeze(utilityObject);
-        }
-        return utilityObject;
-    }
-})();
-
-/** Utility to genarete clientUUID for service calls **/
-voltmx.sdk.util.checkAndGenerateClientUUID = function () {
-
-    var persistedClientUUID = voltmx.sdk.util.decryptAndRetrieveClientUUID();
-    if (voltmx.sdk.util.isNullOrEmptyString(persistedClientUUID)) {
-        var clientUUID = voltmx.license.generateUUID().toString();
-        voltmxRef.clientUUID = clientUUID;
-
-        voltmx.sdk.util.encryptAndSaveClientUUID(clientUUID);
-    } else {
-        voltmxRef.clientUUID = persistedClientUUID;
-    }
-};
-
-voltmx.sdk.util.encryptAndSaveClientUUID = function (clientUUID) {
-
-    var encryptionSalt = [voltmx.sdk.util.getSDKUniversalSalt()];
-    var encryptionAlgo = voltmx.sdk.constants.ENCRYPTION_ALGO_AES;
-    var encrpytedText = voltmx.sdk.util.encryptText(clientUUID, encryptionSalt, encryptionAlgo);
-
-    voltmx.sdk.dataStore.setItem(voltmx.sdk.constants.CLIENT_SDK_UUID, encrpytedText);
-};
-
-voltmx.sdk.util.decryptAndRetrieveClientUUID = function () {
-
-    var encryptedText = voltmx.sdk.dataStore.getItem(voltmx.sdk.constants.CLIENT_SDK_UUID);
-    if (voltmx.sdk.util.isNullOrEmptyString(encryptedText)) {
-        return null;
-    }
-
-    var encryptionSalt = [voltmx.sdk.util.getSDKUniversalSalt()];
-    var encryptionAlgo = voltmx.sdk.constants.ENCRYPTION_ALGO_AES;
-    var decrpytedText = voltmx.sdk.util.decryptText(encryptedText, encryptionSalt, encryptionAlgo);
-    return decrpytedText;
-};
-
-/** Utility to get sdk universal salt **/
-voltmx.sdk.util.getSDKUniversalSalt = function () {
-
-    var salt = voltmx.sdk.dataStore.getItem(voltmx.sdk.constants.CLIENT_SDK_UNIVERSAL_SALT);
-    if (!voltmx.sdk.util.isNullOrEmptyString(salt)) {
-        return salt;
-    }
-
-    salt = voltmx.license.generateUUID().toString();
-    voltmx.sdk.dataStore.setItem(voltmx.sdk.constants.CLIENT_SDK_UNIVERSAL_SALT, salt);
-    return salt;
-};
-/**
- * Utility function to manage sdk meta data for login in same window
- */
-voltmx.sdk.util.getMetaDataManagerForLoginInSameWindow = (function () {
-    var utilityObject = null;
-
-    function MetaDataManager() {
-        var metaData = null;
-        var networkProvider = null;
-        /**
-         * This function returns Middleware endpoint for saving and retrieve values in cookie
-         * @return {*}
-         */
-        function getClientStateEndpoint() {
-            var mainRef = voltmxRef.mainRef;
-            var middlewareServerUrl = mainRef.config.reportingsvc.session.split("/IST")[0];
-            return middlewareServerUrl + voltmx.sdk.constants.APP_VERIFIER_MW_STORE_ENDPOINT;
-        }
-
-        /**
-         * This method sets given value to current object of utility against given key
-         * @param key
-         * @param value
-         */
-        this.setItem = function (key, value) {
-            voltmx.sdk.logsdk.info("setting value for MetaDataManagerForLoginInSameWindow for key-" + key);
-            metaData.set(key, value);
-        }
-
-        /**
-         * This method returns corresponding value for given key
-         * @param key
-         * @returns {any}
-         */
-        this.getItem = function (key) {
-            voltmx.sdk.logsdk.info("getting value for MetaDataManagerForLoginInSameWindow for key-" + key);
-            return metaData.get(key);
-        }
-
-        /**
-         * This method retrieves app verifier at Middleware as sdk/browser being a public client should not store locally
-         * successCallback will be called with app verifier body json if call gets passed ,otherwise failureCallback with error.
-         * @param successCallback
-         * @param failureCallback
-         */
-        this.retrieveAppVerifier = function (successCallback, failureCallback) {
-            voltmx.sdk.logsdk.info("Entering retrieveAppVerifier");
-            voltmx.sdk.claimsRefresh(_getCodeVerifier, failureCallback);
-
-            function _getCodeVerifier() {
-                voltmx.sdk.logsdk.info("getCodeVerifier's claims passed");
-                var middlewareStateUrl = getClientStateEndpoint();
-                var headers = {};
-                headers[voltmx.sdk.constants.KONY_AUTHORIZATION_HEADER] = voltmxRef.currentClaimToken;
-                headers[voltmx.sdk.constants.APP_KEY_HEADER] = voltmxRef.mainRef.appKey;
-                headers[voltmx.sdk.constants.APP_SECRET_HEADER] = voltmxRef.mainRef.appSecret;
-                var networkOptions = {};
-                networkOptions.xmlHttpRequestOptions = {};
-                networkOptions.xmlHttpRequestOptions.enableWithCredentials = true;
-                networkOptions[voltmx.sdk.constants.IGNORE_MESSAGE_INTEGRITY] = true;
-
-                networkProvider.get(middlewareStateUrl, null, headers, function (response){
-                    voltmx.sdk.logsdk.info("Exiting retrieveAppVerifier with success");
-                    voltmx.sdk.verifyAndCallClosure(successCallback,response);
-                }, function (err) {
-                    voltmx.sdk.logsdk.error("unable to save the app verifier at middleware " + middlewareStateUrl + " , due to " + err.message);
-                    var errorObject = voltmx.sdk.error.getSingleWindowLoginErrObj(voltmx.sdk.errorcodes.app_verifier_retrieve_failed,
-                        voltmx.sdk.errormessages.app_verifier_retrieve_failed);
-                    voltmx.sdk.verifyAndCallClosure(failureCallback, errorObject);
-                }, null, networkOptions);
-            }
-
-        }
-
-        /**
-         * This method saves app verifier at Middleware as sdk/browser being a public client should not store locally
-         * successCallback will be called if call gets passed ,otherwise failureCallback with error.
-         * @param appVerifierJSON
-         * @param successCallback
-         * @param failureCallback
-         */
-        this.saveAppVerifier = function (appVerifierJSON, successCallback, failureCallback) {
-            voltmx.sdk.logsdk.info("Entering saveAppVerifier");
-            voltmx.sdk.claimsRefresh(_saveAppVerifier, failureCallback);
-
-            function _saveAppVerifier() {
-                voltmx.sdk.logsdk.info("saveAppVerifier's claims passed");
-                var middlewareStateUrl = getClientStateEndpoint();
-                var headers = {};
-                headers[voltmx.sdk.constants.KONY_AUTHORIZATION_HEADER] = voltmxRef.currentClaimToken;
-                headers[voltmx.sdk.constants.APP_KEY_HEADER] = voltmxRef.mainRef.appKey;
-                headers[voltmx.sdk.constants.APP_SECRET_HEADER] = voltmxRef.mainRef.appSecret;
-                var networkOptions = {};
-                networkOptions.xmlHttpRequestOptions = {};
-                networkOptions.xmlHttpRequestOptions.enableWithCredentials = true;
-                networkOptions[voltmx.sdk.constants.IGNORE_MESSAGE_INTEGRITY] = true;
-
-                networkProvider.post(middlewareStateUrl, appVerifierJSON, headers, function (response) {
-                    voltmx.sdk.logsdk.info("Exiting saveAppVerifier with success");
-                    voltmx.sdk.verifyAndCallClosure(successCallback, response);
-                }, function (err) {
-                    voltmx.sdk.logsdk.error("unable to save the app verifier at middleware " + middlewareStateUrl + " , due to " + err.message);
-                    var errorObject = voltmx.sdk.error.getSingleWindowLoginErrObj(voltmx.sdk.errorcodes.app_verifier_save_failed,
-                        voltmx.sdk.errormessages.app_verifier_save_failed);
-                    voltmx.sdk.verifyAndCallClosure(failureCallback, errorObject);
-                }, voltmx.sdk.constants.CONTENT_TYPE_JSON, networkOptions);
-            }
-
-        }
-
-        /**
-         * This method stores all value in secured way
-         */
-        this.saveMetaData = function () {
-            voltmx.sdk.logsdk.info("saving data inside MetaDataManagerForLoginInSameWindow");
-            voltmx.sdk.dataStore.setSecureItem(voltmx.sdk.constants.KEY_METADATA_SDK_LOGIN_FOR_SAME_WINDOW, this.getMetadataJSON());
-        }
-
-        /**
-         * This method returns all values of Map as JSON
-         * @returns {JSON}
-         */
-        this.getMetadataJSON = function () {
-            voltmx.sdk.logsdk.info("getting value of MetaDataManagerForLoginInSameWindow in json format");
-            var metaJSON = {};
-            metaData.forEach(function (value, key) {
-                metaJSON[key] = value;
-            });
-            return metaJSON;
-        }
-
-        /**
-         * This method retrieves and returns secured values stored and rehydrate the current util object
-         * @returns {JSON}
-         */
-        this.loadSavedMetaData = function () {
-            if(voltmx.sdk.isNullOrUndefined(metaData) || metaData.size === 0) {
-                voltmx.sdk.logsdk.info("retrieving saved value of MetaDataManagerForLoginInSameWindow");
-                var metaJSON = voltmx.sdk.dataStore.getSecureItem(voltmx.sdk.constants.KEY_METADATA_SDK_LOGIN_FOR_SAME_WINDOW);
-                for (key in metaJSON) {
-                    this.setItem(key, metaJSON[key]);
-                }
-            }
-        }
-
-        /**
-         * This method removes stored values
-         */
-        this.removeSavedMetaData = function () {
-            voltmx.sdk.logsdk.info("removing saved value of MetaDataManagerForLoginInSameWindow");
-            voltmx.sdk.dataStore.removeItem(voltmx.sdk.constants.KEY_METADATA_SDK_LOGIN_FOR_SAME_WINDOW);
-        }
-
-        /**
-         * This method initialize metaData object
-         */
-        this.initialize = function () {
-            if(voltmx.sdk.isNullOrUndefined(metaData) && voltmx.sdk.isNullOrUndefined(networkProvider)){
-                voltmx.sdk.logsdk.info("initializing private variable of MetaDataManagerForLoginInSameWindow");
-                metaData = new Map();
-                networkProvider = new voltmxNetworkProvider();
-            }
-        }
-
-        /**
-         * This method removes any stored secured values and make run time values null
-         */
-        this.destroy = function () {
-            voltmx.sdk.logsdk.info("making internal variable null & removing saved state of MetaDataManagerForLoginInSameWindow");
-            this.removeSavedMetaData();
-            metaData = null;
-            networkProvider = null;
-        }
-    }
-
-    return function () {
-        voltmx.sdk.logsdk.info("returning singleton instance of MetaDataManagerForLoginInSameWindow");
-        if (voltmx.sdk.isNullOrUndefined(utilityObject)) {
-            utilityObject = new MetaDataManager();
             Object.freeze(utilityObject);
         }
         return utilityObject;

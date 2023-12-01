@@ -1,9 +1,18 @@
 {
-    "HEAD": "w230245bbf07483798ab254784438347",
-    "w230245bbf07483798ab254784438347": {
-        "children": [],
-        "kuid": "w230245bbf07483798ab254784438347",
+    "HEAD": "w9cf6dac1aa144e798d7e3f773801aa8",
+    "w9cf6dac1aa144e798d7e3f773801aa8": {
+        "children": [
+            "wf5c4cec9dd94f21840a1e5165b12a0a"
+        ],
+        "kuid": "w9cf6dac1aa144e798d7e3f773801aa8",
         "name": "localfiles",
         "type": "L"
+    },
+    "wf5c4cec9dd94f21840a1e5165b12a0a": {
+        "extension": "html",
+        "kuid": "wf5c4cec9dd94f21840a1e5165b12a0a",
+        "name": "spinner.html",
+        "parent": "w9cf6dac1aa144e798d7e3f773801aa8",
+        "type": "F"
     }
 }
