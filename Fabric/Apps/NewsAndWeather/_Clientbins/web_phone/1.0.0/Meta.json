@@ -1,8 +1,0 @@
-{
-  "filename": "NewsAndWeather.zip",
-  "channels": "responsive_web",
-  "upgradable": false,
-  "displayname": "NewsAndWeather",
-  "description": "Binary for NewsAndWeather",
-  "version": "1.0.0"
-}

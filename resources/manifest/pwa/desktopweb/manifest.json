@@ -3,10 +3,10 @@
     "orientation": "any",
     "background_color": "#FFFFFF",
     "display": "standalone",
-    "name": "NewsAndWeather",
-	"id": "NewsAndWeather",
-    "short_name": "NewsAndWeather",
-	"start_url": "/apps/NewsAndWeather/",
+    "name": "PSTestApp",
+	"id": "PSTestApp",
+    "short_name": "PSTestApp",
+	"start_url": "/apps/PSTestApp/",
     "icons": [{
     "src": "voltmx_48.png",
     "sizes": "48x48",
@@ -39,6 +39,6 @@
     }],
     "related_applications": [{
         "platform": "web",
-		"url": "http://localhost:port/apps/NewsAndWeather/"
+		"url": "http://localhost:port/apps/PSTestApp/"
     }]
 }
