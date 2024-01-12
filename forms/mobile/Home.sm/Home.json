@@ -15,7 +15,7 @@
         0
     ],
     "_percent_": true,
-    "_skin_": "sc43ff30a5114257b72bc85d38dee710",
+    "_skin_": "sfbe0b910dfe4363bf286a9d2ada7748",
     "_title_": null,
     "addWidgetsdone": false,
     "allboxes": [],
@@ -36,15 +36,17 @@
     "controllerInfo": {
         "default": {
             "channel": "mobile",
-            "name": "Form1Controller"
+            "name": "HomeController"
         }
     },
+    "currentLocale": "default",
     "desktopweb": {
         "needAppMenu": false
     },
+    "device": "iPhoneXS",
     "displayorientation": 1,
     "enabledforidletimeout": false,
-    "id": "Form1",
+    "id": "Home",
     "info": null,
     "initdone": false,
     "inputaccessoryviewtype": 4,
@@ -62,7 +64,7 @@
             "titleBarAttributes": {
                 "barStyle": 0,
                 "hidesBackButton": false,
-                "kuid": "ff6a42cfe43f412fa73d55164fb6662e",
+                "kuid": "g00cd374d6504837b623022057f42106",
                 "leftBarButtonItems": [],
                 "leftItemsSupplementBackButton": true,
                 "prompt": "",
@@ -73,7 +75,7 @@
                         "info": {
                             "title": "Edit"
                         },
-                        "kuid": "ac86da2877844d978a8d127158f3c2ae",
+                        "kuid": "af85272fe6f44178bb4f6511974d3c11",
                         "style": 0,
                         "tintColor": "4b88f100",
                         "type": 1
@@ -90,11 +92,14 @@
     "kiosk": {
         "needAppMenu": false
     },
-    "kuid": "b44301d45b8e4a76b59dac0a44b4a349",
+    "kuid": "fb6e88e7d7c94c68aa13478d43b174b5",
     "layouttype": 2,
     "name": "kony.ui.Form2",
     "needappmenu": false,
     "paddinginpixel": false,
+    "platform": "iphone",
+    "prevDevice": "iPhoneXS",
+    "prevPlatform": "iphone",
     "retaincontentalignment": false,
     "retainflexpositionproperties": false,
     "retainscrollposition": false,
@@ -104,6 +109,9 @@
         "needAppMenu": false
     },
     "spaandroidtablet": {
+        "needAppMenu": false
+    },
+    "spabb": {
         "needAppMenu": false
     },
     "spaip": {
@@ -118,7 +126,7 @@
     "spawinphone8": {
         "needAppMenu": false
     },
-    "titleBarSkin": "sd875a3fcf5547569fdfa891bd509289",
+    "titleBarSkin": "s7c2028af1a84384b11825e5ea71b5d2",
     "titlebar": true,
     "type": 3,
     "wType": "Form",

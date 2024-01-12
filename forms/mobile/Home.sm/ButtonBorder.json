@@ -39,11 +39,11 @@
     "id": "ButtonBorder",
     "info": null,
     "isvisible": true,
-    "kuid": "f9fba451bffd4fa2bc191e0b02b2b26d",
+    "kuid": "a959f6af510a42668bd860eacc8642f3",
     "masterType": 1,
     "name": "kony.ui.Button",
     "parent": "BorderButtonRound",
-    "pf": "Form1",
+    "pf": "Home",
     "wType": "Button",
     "zindex": 1
 }

@@ -22,7 +22,7 @@
         0
     ],
     "_percent_": true,
-    "_skin_": "s01e3ec337144f7fbb0ac6e1078c303a",
+    "_skin_": "s8a17d1ebb2a4a199bfc0549a50f22e7",
     "_top_": {
         "type": "string",
         "value": "0dp"
@@ -48,12 +48,12 @@
     "id": "BorderButtonRound",
     "info": null,
     "isvisible": true,
-    "kuid": "acece7ee3dec428694aea040c7e7eae8",
+    "kuid": "h156d2dec8394809bc7a6e6248c61d13",
     "layouttype": 2,
     "masterType": 1,
     "name": "kony.ui.FlexContainer",
-    "parent": "Form1",
-    "pf": "Form1",
+    "parent": "Home",
+    "pf": "Home",
     "snapgridsize": 10,
     "snaptogrid": true,
     "wType": "FlexContainer",

@@ -2,92 +2,15 @@
     "models": {
         "mobile": {
             "class": "GraphLinksModel",
-            "linkDataArray": [
-                {
-                    "actionId": "NAVIGATE_TO_FORM___d0c9cc4db6894407a62e1d5f7b1f4e44",
-                    "actionSequenceId": "AS_Button_d2f0985dd6384218bea42dc9dea2f3dc",
-                    "beautifiedPath": "frmNewsAndWeather > btnFloating > onClick",
-                    "evt": "ide_onClick",
-                    "from": "b7e61c0deb3a4169a987b8d1a8590c54",
-                    "isPSP": false,
-                    "points": [
-                        168,
-                        441.8238606770833,
-                        178,
-                        441.8238606770833,
-                        180,
-                        441.8238606770833,
-                        180,
-                        441.8238606770833,
-                        188,
-                        441.8238606770833,
-                        188,
-                        192.89052734374997,
-                        444,
-                        192.89052734374997,
-                        454,
-                        192.89052734374997
-                    ],
-                    "to": "b01986ea256f49db85afbea0b8991e10",
-                    "widgetKUID": "h83ca2d0942d45fd8edf75f72d0f3b18"
-                },
-                {
-                    "actionId": "NAVIGATE_TO_FORM___f68880fbfb62473180e48f617e0ff220",
-                    "actionSequenceId": "AS_UWI_c142c3c0a29d46cca4705a4172b01361",
-                    "beautifiedPath": "frmNewsAndWeather > hamburger > onClickFooterHelp",
-                    "evt": "ide_onClickFooterHelp",
-                    "from": "b7e61c0deb3a4169a987b8d1a8590c54",
-                    "isPSP": false,
-                    "points": [
-                        168,
-                        543.9571940104166,
-                        178,
-                        543.9571940104166,
-                        311,
-                        543.9571940104166,
-                        311,
-                        792.8905273437501,
-                        444,
-                        792.8905273437501,
-                        454,
-                        792.8905273437501
-                    ],
-                    "to": "f93855e1d3b047d085031fae86b2f695",
-                    "widgetKUID": "ab980dd539fd49cc97bf7666c1a2baba"
-                }
-            ],
+            "linkDataArray": [],
             "nodeDataArray": [
                 {
-                    "formKUID": "b01986ea256f49db85afbea0b8991e10",
-                    "formName": "frmFramework",
-                    "isStartupForm": false,
-                    "key": "b01986ea256f49db85afbea0b8991e10",
-                    "loc": "454 39.690527343750006",
-                    "thumbnailURL": "/assets/NewsandWeather/forms/mobile/KnowledgeFramework/frmFramework.sm/.thumbs/default.jpeg"
-                },
-                {
-                    "formKUID": "b7e61c0deb3a4169a987b8d1a8590c54",
-                    "formName": "frmNewsAndWeather",
-                    "isStartupForm": false,
-                    "key": "b7e61c0deb3a4169a987b8d1a8590c54",
-                    "loc": "8 339.69052734375003",
-                    "thumbnailURL": null
-                },
-                {
-                    "formKUID": "be31b316dd5546a7bbdf2943d47b76cb",
-                    "formName": "frmNewsDetails",
-                    "isStartupForm": false,
-                    "key": "be31b316dd5546a7bbdf2943d47b76cb",
-                    "loc": "454 1239.6905273437499",
-                    "thumbnailURL": null
-                },
-                {
-                    "formKUID": "f93855e1d3b047d085031fae86b2f695",
-                    "formName": "frmSplash",
+                    "formKUID": "fb6e88e7d7c94c68aa13478d43b174b5",
+                    "formName": "Home",
                     "isStartupForm": true,
-                    "key": "f93855e1d3b047d085031fae86b2f695",
-                    "loc": "454 639.6905273437501",
-                    "thumbnailURL": null
+                    "key": "fb6e88e7d7c94c68aa13478d43b174b5",
+                    "loc": "8 24.845263671875003",
+                    "thumbnailURL": "/assets/Sample/forms/mobile/Home.sm/.thumbs/default.jpeg"
                 }
             ]
         }
