@@ -10,8 +10,8 @@ binaries/
 
 # Other Visualizer auto-generated files.
 middleware.properties
-modules/voltmx_sdk.js
-modules/VoltmxSyncLib.js
+modules/kony_sdk.js
+modules/KonySyncLib.js
 
 # Auto-generated temporary internationalization files.
 resources/i18n/
