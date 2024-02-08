@@ -1,0 +1,9 @@
+{
+    "CopyVanityObjectSvc_vanityObject": {
+        "servicename": "CopyVanityObjectSvc",
+        "serviceid": "d76bc753-7f31-4b1b-a10b-df3ed98fc80b",
+        "type": "objectsvcs",
+        "objectname": "vanityObject",
+        "objectid": "92396"
+    }
+}

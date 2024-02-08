@@ -1,0 +1,30 @@
+{
+    "AS_Button_ga80dc2e14d34ca1992f1b5060bb6287": {
+        "id": "AS_Button_ga80dc2e14d34ca1992f1b5060bb6287",
+        "type": "ACTION_SEQUENCE",
+        "params": [{
+            "datatype": "collection",
+            "name": "eventobject"
+        }],
+        "contextObj": {
+            "name": "Form1",
+            "type": "forms",
+            "platform": null,
+            "KUID": "bc4b9093a3a04441a08f7a5fc7681679"
+        },
+        "language": "js",
+        "eventType": "onClick",
+        "actions": [{
+            "id": "NAVIGATE_TO_FORM__ab104d4129254c9daa457b4b996e340f",
+            "type": "NAVIGATE_TO_FORM",
+            "formId": "FrmMetrics",
+            "formKUID": "cb8cbbe3e99147a6b9366fdb160d2acf",
+            "projectName": "VanityWithIris2",
+            "mappings": {},
+            "mappingsOrder": [],
+            "enableMappingEditor": true,
+            "package": "",
+            "isCustomInput": false
+        }]
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "AS_Button_d4ce85892fe94bc1b55c71c62d747a52": {
+        "id": "AS_Button_d4ce85892fe94bc1b55c71c62d747a52",
+        "type": "ACTION_SEQUENCE",
+        "params": [{
+            "datatype": "collection",
+            "name": "eventobject"
+        }],
+        "contextObj": {
+            "name": "FrmMetrics",
+            "type": "forms",
+            "platform": null,
+            "KUID": "cb8cbbe3e99147a6b9366fdb160d2acf"
+        },
+        "language": "js",
+        "eventType": "onClick",
+        "actions": [{
+            "id": "INVOKE_FUNCTION__ebb835394b7b413db4344703136e66d4",
+            "type": "INVOKE_FUNCTION",
+            "sequenceKUID": "setUserId",
+            "display": "setUserId",
+            "inputparams": [],
+            "parentId": null,
+            "callbackType": null,
+            "disabled": null,
+            "source": "module"
+        }]
+    }
+}
