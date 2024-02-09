@@ -263,9 +263,9 @@
     "cordovaVersionInfo": {
         "useGlobalCordova": false
     },
-    "createdVizVersion": "9.5.4",
-    "createdgaversion": "9.5.4",
-    "currentgaversion": "9.5.4",
+    "createdVizVersion": "9.5.281",
+    "createdgaversion": "9.5.281",
+    "currentgaversion": "9.5.281",
     "deeplinkkey": "None",
     "defaultZIndex": "1",
     "defaultlocalekey": "",
@@ -400,7 +400,7 @@
             "version": "1.0"
         }
     },
-    "konyVizVersion": "9.5.4",
+    "konyVizVersion": "9.5.281",
     "lastmodifiedtime": "1706847322923",
     "location": "false",
     "mangoapptitlekey": ",,,,,,",
@@ -670,7 +670,7 @@
     "previewshowpassword": "false",
     "privateNetworkClientServer": "false",
     "project.type": "js",
-    "project_version": "sprint44",
+    "project_version": "sprint42",
     "protectedmodeenabled_android": "false",
     "protectedmodeenabled_androidwear": "false",
     "protectedmodeenabled_ios": "false",
