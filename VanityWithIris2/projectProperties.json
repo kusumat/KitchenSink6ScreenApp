@@ -84,7 +84,7 @@
     "apmserviceresponse": "false",
     "apmtouchorclick": "",
     "appaddrkey": "",
-    "appidkey": "VanityWithIris234",
+    "appidkey": "VanityIrisPS",
     "appiniteventkey": "None",
     "applepushfunc": "None",
     "apploadeventkey": "None",
@@ -221,7 +221,7 @@
         },
         "wType": "Appmenu"
     },
-    "appnamekey": "VanityWithIris234",
+    "appnamekey": "VanityIrisPS",
     "appointments": "false",
     "apppackagekey": "com.orgname.VanityWithIris",
     "apptitle": "",
