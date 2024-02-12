@@ -388,9 +388,9 @@
             "version": "1.0"
         },
         "c83da1d5-c54d-49a0-b340-3e8a58cec770": {
-            "appName": "VanityTestSDK",
-            "baseId": "f0ca18ab-2339-463f-b206-b870fb093a38",
-            "id": "f0ca18ab-2339-463f-b206-b870fb093a38",
+            "appName": "VanityTestAppfactory",
+            "baseId": "9b7b6c26-dd59-435b-8d63-ddd30a7d05a0",
+            "id": "9b7b6c26-dd59-435b-8d63-ddd30a7d05a0",
             "version": "1.0"
         },
         "ebe5a9b6-bb00-43e6-8657-f0ae873a8af4": {
@@ -757,7 +757,8 @@
     "userNotificationListener": "false",
     "useridkey": "",
     "usevizactions": "false",
-    "vanity_URLs": "hclvanity.konycloud.com",
+    "vanity_URLs": "foundry01.dev-hclvoltmx.com",
+    "vanity_domain": "hclvanity.konycloud.com",
     "vendornamekey": "HCL",
     "videosLibrary": "false",
     "voipCall": "false",
