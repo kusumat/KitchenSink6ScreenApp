@@ -263,9 +263,9 @@
     "contacts": "false",
     "cordovaModified": false,
     "cordovaVersionInfo": {},
-    "createdVizVersion": "9.2.70",
-    "createdgaversion": "9.2.70",
-    "currentgaversion": "9.2.70",
+    "createdVizVersion": "9.2.158",
+    "createdgaversion": "9.2.158",
+    "currentgaversion": "9.2.158",
     "deeplinkkey": "None",
     "defaultZIndex": "1",
     "defaultlocalekey": "",
@@ -388,7 +388,7 @@
             "version": "1.0"
         }
     },
-    "konyVizVersion": "9.2.70",
+    "konyVizVersion": "9.2.158",
     "lastmodifiedtime": "1709635115587",
     "location": "false",
     "mangoapptitlekey": ",,,,,,",
